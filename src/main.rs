@@ -64,3 +64,21 @@ fn main() {
     println!("The current state of the CPU is : {:?}", cpu);
 
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn create_cpu_in_known_state() {
+        let mut cpu = CPU::new(0xFFFC);
+        cpu.initalize(0xFFFC);
+        assert_eq!(0x00, cpu.accumulator);
+        assert_eq!(0x00, cpu.x_register);
+        assert_eq!(0x00, cpu.y_register);
+        assert_eq!(0x00, cpu.stack_pointer);
+        assert_eq!(0x00, cpu.processor_status);
+        assert_eq!(0xFFFC, cpu.program_counter);
+        assert_eq!(vec![0x00, 100 + 1], cpu.memory.ram);
+    }
+}
