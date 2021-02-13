@@ -79,6 +79,6 @@ mod tests {
         assert_eq!(0x00, cpu.stack_pointer);
         assert_eq!(0x00, cpu.processor_status);
         assert_eq!(0xFFFC, cpu.program_counter);
-        assert_eq!(vec![0x00, 100 + 1], cpu.memory.ram);
+        assert_eq!(vec![0x00; 100 + 1], cpu.memory.ram);
     }
 }
