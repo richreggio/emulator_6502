@@ -38,6 +38,14 @@ impl Registers {
     registers
   }
 
+  pub fn stack_push() {
+    // Needs to be implemented
+  }
+
+  pub fn stack_pull() {
+    // Needs to be implemented
+  }
+
   // Processor status flags
   // 0b0000_0001 Carry flag (0 = false, 1 = true)
   // 0b0000_0010 Zero flag (0 = result not zero, 1 = result zero)
