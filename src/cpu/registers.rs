@@ -1,3 +1,4 @@
+use crate::memory::Memory;
 use rand::random;
 
 #[derive(Debug)]
@@ -38,12 +39,14 @@ impl Registers {
     registers
   }
 
-  pub fn stack_push() {
-    // Needs to be implemented
+  pub fn stack_push(&mut self, memory: &mut Memory, value: u8) {
+    memory.write_byte(0x0100 + self.stack_pointer as usize, value);
+    self.stack_pointer += 1;
   }
 
-  pub fn stack_pull() {
-    // Needs to be implemented
+  pub fn stack_pull(&mut self, memory: &Memory) -> u8 {
+    self.stack_pointer -= 1;
+    memory.read_byte(0x0100 + self.stack_pointer as usize)
   }
 
   // Processor status flags
@@ -213,6 +216,7 @@ mod tests {
     registers.set_break_flag(false);
     assert!(!registers.break_flag_is_set());
   }
+
   #[test]
   fn check_if_overflow_flag_is_set() {
     let mut registers = Registers::new_initalized(0xFFFF);
@@ -222,6 +226,7 @@ mod tests {
     registers.set_overflow_flag(false);
     assert!(!registers.overflow_flag_is_set());
   }
+
   #[test]
   fn check_if_negative_flag_is_set() {
     let mut registers = Registers::new_initalized(0xFFFF);
@@ -230,5 +235,29 @@ mod tests {
     assert!(registers.negative_flag_is_set());
     registers.set_negative_flag(false);
     assert!(!registers.negative_flag_is_set());
+  }
+
+  #[test]
+  fn stack_operations_working() {
+    let mut registers = Registers::new_initalized(0xFFFF);
+    let mut memory = Memory::new_initalized();
+
+    assert_eq!(registers.stack_pointer, 0x00);
+
+    registers.stack_push(&mut memory, 0xA1);
+    registers.stack_push(&mut memory, 0xFF);
+    registers.stack_push(&mut memory, 0xFA);
+    registers.stack_push(&mut memory, 0xB5);
+    registers.stack_push(&mut memory, 0x66);
+
+    assert_eq!(registers.stack_pointer, 0x05);
+
+    assert_eq!(registers.stack_pull(&memory), 0x66);
+    assert_eq!(registers.stack_pull(&memory), 0xB5);
+    assert_eq!(registers.stack_pull(&memory), 0xFA);
+    assert_eq!(registers.stack_pull(&memory), 0xFF);
+    assert_eq!(registers.stack_pull(&memory), 0xA1);
+
+    assert_eq!(registers.stack_pointer, 0x00);
   }
 }
