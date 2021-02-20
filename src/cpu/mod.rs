@@ -1,3 +1,3 @@
-mod addressing_mode;
+pub mod addressing_mode;
 mod instructions;
 pub mod registers;
