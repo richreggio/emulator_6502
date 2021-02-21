@@ -6,14 +6,6 @@ pub struct Memory {
   ram: Vec<u8>,
 }
 
-// Memory capped at 64kb (0x0000-0xFFFF)
-// First 256 Bytes called the 'Zero page' (0x0000-0x00FF)
-// Stack is fixed to the next 256 Bytes (0x0100-0x01FF)
-// Last 6 bytes of memory are reserved for reserved addresses
-// Non-maskable interrupt handler (0xFFFA-0xFFFB)
-// Power on reset location (0xFFFC-0xFFFD)
-// BRK/interrupt request handler (0xFFFE-0xFFFF)
-// Every 256 bytes is considered a 'page'
 impl Memory {
   pub fn new() -> Memory {
     Memory {

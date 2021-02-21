@@ -1,3 +1,7 @@
+pub use crate::cpu::opcode::Opcode;
+pub use crate::cpu::registers::Registers;
+pub use crate::memory::Memory;
+
 // Load instructions - 12 total
 mod las;
 mod lax;

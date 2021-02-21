@@ -39,13 +39,14 @@ impl Registers {
     registers
   }
 
+  // Stack is fixed to 256 Bytes (0x0100-0x01FF)
   pub fn stack_push(&mut self, memory: &mut Memory, value: u8) {
     memory.write_byte(0x0100 + self.stack_pointer as usize, value);
-    self.stack_pointer += 1;
+    self.stack_pointer -= 1;
   }
 
   pub fn stack_pull(&mut self, memory: &Memory) -> u8 {
-    self.stack_pointer -= 1;
+    self.stack_pointer += 1;
     memory.read_byte(0x0100 + self.stack_pointer as usize)
   }
 
