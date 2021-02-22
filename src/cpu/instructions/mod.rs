@@ -1,4 +1,4 @@
-pub use crate::cpu::addressing_mode::AddressingMode;
+pub use crate::cpu::addressing_mode::AddressingMode as AdMode;
 pub use crate::cpu::operation::Operation;
 pub use crate::cpu::registers::Registers;
 pub use crate::memory::Memory;

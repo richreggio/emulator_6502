@@ -8,14 +8,14 @@ fn main() {
     let mut memory = Memory::new_initalized();
     println!("The current state of the CPU is : {:?}", registers);
 
-    loop {
-        execute(&mut registers, &mut memory);
-    }
+    // loop {
+    //     execute(&mut registers, &mut memory);
+    // }
 }
 
-fn execute(registers: &mut Registers, memory: &mut Memory) {
-    Operation::next(
-        memory.read_byte(registers.program_counter),
-        registers.program_counter + 1,
-    );
-}
+// fn execute(registers: &mut Registers, memory: &mut Memory) {
+//     Operation::next(
+//         memory.read_byte(registers.program_counter),
+//         registers.program_counter + 1,
+//     );
+// }

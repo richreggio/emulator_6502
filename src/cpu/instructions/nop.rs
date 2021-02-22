@@ -1,5 +1,6 @@
-// NOP - No Operation
+use super::*;
 
+// NOP - No Operation
 // Operation: No operation
 // Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
 // Implied	NOP 	$1A*	1	2
@@ -30,6 +31,6 @@
 // X-Indexed Zero Page	NOP $nn,X	$74*	2	4
 // X-Indexed Zero Page	NOP $nn,X	$D4*	2	4
 // X-Indexed Zero Page	NOP $nn,X	$F4*	2	4
-
-// *Undocumented.
 // p: =1 if page is crossed.
+
+pub fn nop(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
