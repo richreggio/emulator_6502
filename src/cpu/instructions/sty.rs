@@ -4,10 +4,14 @@ use super::*;
 // Operation: Y → M
 // Transfer the value of the Y register to the addressed memory location.
 // STY does not affect any flags or registers in the microprocessor.
-// Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
-// Absolute	STY $nnnn	$8C	3	4
-// Zero Page	STY $nn	$84	2	3
-// X-Indexed Zero Page	STY $nn,X	$94	2	4
+// -----------------------------------------------------------------------------------------------
+// | Addressing Mode	            | Assembly Language Form | Opcode	| No. Bytes	| No. Cycles |
+// |--------------------------------|------------------------------------------------------------|
+// | Absolute                       | STY $nnnn              | $8C      | 3         | 4          |
+// | Zero Page                      | STY $nn                | $84      | 2         | 3          |
+// | Zero Page X-Indexed            | STY $nn,X              | $94      | 2         | 4          |
+// | p: =1 if page is crossed       |                        |          |           |            |
+// |----------------------------------------------------------------------------------------------
 
 pub fn sty(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
     let address = match operation.addressing_mode {
@@ -16,5 +20,5 @@ pub fn sty(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         AdMode::ZeroPageYIndex(address) => address,
         _ => 0,
     };
-    memory.write_byte(address, registers.x_register)
+    memory.write_byte(address, registers.y_register)
 }

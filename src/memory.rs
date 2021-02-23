@@ -1,5 +1,5 @@
 // 6502 processor can only address a max of 65536 bytes of memory
-const MAX_MEMORY: usize = 1024 * 64;
+pub const MAX_MEMORY: usize = 1024 * 64;
 
 #[derive(Debug)]
 pub struct Memory {

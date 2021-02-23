@@ -8,4 +8,7 @@ use super::*;
 // Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
 // Implied	BRK 	$00	1	7
 
-pub fn brk(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn brk(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
+    // Using for testing since BRK's opcode is 0x00 and memroy is initalized to all 0's
+    println!("Current memory address: {}", registers.program_counter);
+}

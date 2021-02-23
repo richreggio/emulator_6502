@@ -3,7 +3,7 @@ use crate::cpu::addressing_mode::AddressingMode::{
     Implied, Relative, ZeroPage, ZeroPageXIndex, ZeroPageXIndexIndirect, ZeroPageYIndex,
     ZeroPageYIndexIndirect,
 };
-use crate::memory::Memory;
+use crate::memory::{Memory, MAX_MEMORY};
 use rand::random;
 
 #[derive(Debug)]
@@ -82,7 +82,11 @@ impl Registers {
             Relative(_) => 2,
         };
 
-        self.program_counter += increment;
+        if self.program_counter + increment >= MAX_MEMORY {
+            self.program_counter = (self.program_counter + increment) % 0xFFFF;
+        } else {
+            self.program_counter += increment;
+        };
     }
 
     // Processor status flags

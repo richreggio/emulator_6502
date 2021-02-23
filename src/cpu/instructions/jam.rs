@@ -17,4 +17,6 @@ use super::*;
 // Implied	JAM 	$D2*	1	X
 // Implied	JAM 	$F2*	1	X
 
-pub fn jam(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn jam(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {
+    panic!("End of the line buddy!")
+}

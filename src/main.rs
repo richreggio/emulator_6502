@@ -5,8 +5,10 @@ use emulator_6502::memory::Memory;
 
 fn main() {
     let mut memory = Memory::new_initalized();
-    let mut registers = Registers::new_initalized(0xFFFF);
+    let mut registers = Registers::new_initalized(0xF000);
     println!("The current state of the CPU is : {:?}", registers);
+
+    memory.write_byte(0xFFFF, 0x02);
 
     loop {
         let operation = Operation::next(&mut registers, &memory);
