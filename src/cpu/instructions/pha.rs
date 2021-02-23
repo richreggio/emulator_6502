@@ -7,4 +7,14 @@ use super::*;
 // Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
 // Implied	PHA 	$48	1	3
 
-pub fn pha(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn pha(memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
+    let address = registers.stack_pointer as usize + 0x0100;
+
+    memory.write_byte(address, registers.accumulator);
+
+    if registers.stack_pointer == 0 {
+        registers.stack_pointer = 0xFF;
+    } else {
+        registers.stack_pointer -= 1;
+    }
+}

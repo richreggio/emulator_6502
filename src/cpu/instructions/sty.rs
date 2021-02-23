@@ -9,7 +9,7 @@ use super::*;
 // Zero Page	STY $nn	$84	2	3
 // X-Indexed Zero Page	STY $nn,X	$94	2	4
 
-pub fn sty(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {
+pub fn sty(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
     let address = match operation.addressing_mode {
         AdMode::Absolute(address) => address,
         AdMode::ZeroPage(address) => address,

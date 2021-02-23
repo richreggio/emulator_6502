@@ -4,18 +4,16 @@ use emulator_6502::cpu::registers::Registers;
 use emulator_6502::memory::Memory;
 
 fn main() {
-    let mut registers = Registers::new_initalized(0xFFFF);
     let mut memory = Memory::new_initalized();
+    let mut registers = Registers::new_initalized(0xFFFF);
     println!("The current state of the CPU is : {:?}", registers);
 
-    // loop {
-    //     execute(&mut registers, &mut memory);
-    // }
+    loop {
+        let operation = Operation::next(&mut registers, &memory);
+        execute(&mut memory, &mut registers, operation);
+    }
 }
 
-// fn execute(registers: &mut Registers, memory: &mut Memory) {
-//     Operation::next(
-//         memory.read_byte(registers.program_counter),
-//         registers.program_counter + 1,
-//     );
-// }
+fn execute(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+    (operation.instruction_function)(memory, registers, operation);
+}

@@ -7,4 +7,6 @@ use super::*;
 // Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
 // Implied	TXS 	$9A	1	2
 
-pub fn txs(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn txs(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
+    registers.stack_pointer = registers.x_register;
+}
