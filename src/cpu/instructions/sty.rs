@@ -20,5 +20,5 @@ pub fn sty(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         AdMode::ZeroPageYIndex(address) => address,
         _ => 0,
     };
-    memory.write_byte(address, registers.y_register)
+    memory.write_byte(address, registers.y_register);
 }

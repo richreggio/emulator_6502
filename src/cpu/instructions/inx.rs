@@ -5,7 +5,27 @@ use super::*;
 // Increment X adds 1 to the current value of the X register. This is an 8-bit increment which does not affect the carry operation, therefore, if the value of X before the increment was FF, the resulting value is 00.
 // INX does not affect the carry or overflow flags; it sets the N flag if the result of the increment has a one in bit 7, otherwise resets N; sets the Z flag if the result of the increment is 0, otherwise it resets the Z flag.
 // INX does not affect any other register other than the X register.
-// Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
-// Implied	INX 	$E8	1	2
+// ---------------------------------------------------------------------------------------------
+// | Addressing Mode                | Assembly Language Form | Opcode | No. Bytes | No. Cycles |
+// |--------------------------------|----------------------------------------------------------|
+// | Implied                        | INX                    | $E8    |	1         | 2          |
+// |--------------------------------------------------------------------------------------------
 
-pub fn inx(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn inx(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
+    let value = registers.x_register.wrapping_add(1);
+
+    if value == 0 {
+        registers.set_zero_flag(true);
+    } else {
+        registers.set_zero_flag(false);
+    }
+
+    // Checking seventh bit value
+    if (value & 0b1000_0000) == 0b1000_0000 {
+        registers.set_negative_flag(true);
+    } else {
+        registers.set_negative_flag(false);
+    }
+
+    registers.x_register = value;
+}

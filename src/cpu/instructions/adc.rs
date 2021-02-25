@@ -32,35 +32,86 @@ pub fn adc(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         _ => 0,
     };
 
-    let mut total;
+    let (mut total, carry) = value.overflowing_add(registers.accumulator);
 
     if registers.carry_flag_is_set() {
-        total = value as u16 + registers.accumulator as u16 + 1;
-    } else {
-        total = value as u16 + registers.accumulator as u16;
+        total += 1;
     }
 
-    if total > u8::MAX as u16 {
+    if carry {
         registers.set_carry_flag(true);
-        total %= u8::MAX as u16;
     } else {
         registers.set_carry_flag(false);
     }
 
-    // Need to add overflow flag logic
+    // If the total's 7th bit and the accumulators 7th bit are different
+    // then result exceeded +127 or -128 so set overflow flag
+    if (total & 0b1000_0000) ^ (registers.accumulator & 0b1000_0000) == 0b1000_0000 {
+        registers.set_overflow_flag(true);
+    } else {
+        registers.set_overflow_flag(false);
+    }
 
     if total == 0 {
-        registers.set_zero_flag(true)
+        registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false)
+        registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (total & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true)
+        registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false)
+        registers.set_negative_flag(false);
     }
 
-    registers.accumulator = total as u8;
+    registers.accumulator = total;
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn adc_setup(accumulator_value: u8, memory_value: u8) -> (Memory, Registers, Operation) {
+        let mut memory = Memory::new_initalized();
+        let mut registers = Registers::new();
+        registers.initalize(0x8000);
+
+        // Using opcode for Immediate addressing to simplify testing
+        memory.write_byte(0x8000, 0x69);
+
+        // Setting memory value to be added
+        memory.write_byte(0x8001, memory_value);
+
+        // Setting accumulator value
+        registers.accumulator = accumulator_value;
+
+        let operation = Operation::next(&mut registers, &memory);
+
+        (memory, registers, operation)
+    }
+
+    #[test]
+    fn adc_integers_no_overflow() {
+        let (mut memory, mut registers, operation) = adc_setup(0x15, 0x20);
+
+        adc(&mut memory, &mut registers, operation);
+
+        let result = registers.accumulator;
+
+        assert_eq!(result, 0x35);
+        assert!(!registers.carry_flag_is_set());
+    }
+
+    #[test]
+    fn adc_integers_with_overflow() {
+        let (mut memory, mut registers, operation) = adc_setup(0xFF, 0x05);
+
+        adc(&mut memory, &mut registers, operation);
+
+        let result = registers.accumulator;
+
+        assert_eq!(result, 0x04);
+        assert!(registers.carry_flag_is_set());
+    }
 }

@@ -16,7 +16,7 @@ use super::*;
 // |----------------------------------------------------------------------------------------------
 
 pub fn lsr(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
-    let mut value = match operation.addressing_mode {
+    let tmp_value = match operation.addressing_mode {
         AdMode::Accumulator => registers.accumulator,
         AdMode::Absolute(address) => memory.read_byte(address),
         AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
@@ -26,18 +26,18 @@ pub fn lsr(memory: &mut Memory, registers: &mut Registers, operation: Operation)
     };
 
     // Zeroth bit becomes the carry flag
-    if value & 0b0000_0001 == 0b0000_0001 {
-        registers.set_carry_flag(true)
+    if tmp_value & 0b0000_0001 == 0b0000_0001 {
+        registers.set_carry_flag(true);
     } else {
-        registers.set_carry_flag(false)
+        registers.set_carry_flag(false);
     }
 
-    value = value >> 1;
+    let value = tmp_value >> 1;
 
     if value == 0 {
-        registers.set_zero_flag(true)
+        registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false)
+        registers.set_zero_flag(false);
     }
 
     registers.set_negative_flag(false);

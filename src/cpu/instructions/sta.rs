@@ -28,5 +28,5 @@ pub fn sta(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         AdMode::ZeroPageYIndexIndirect(address) => address,
         _ => 0,
     };
-    memory.write_byte(address, registers.accumulator)
+    memory.write_byte(address, registers.accumulator);
 }

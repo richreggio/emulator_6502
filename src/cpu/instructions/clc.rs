@@ -4,7 +4,12 @@ use super::*;
 // Operation: 0 → C
 // This instruction initializes the carry flag to a 0. This op­ eration should normally precede an ADC loop. It is also useful when used with a R0L instruction to clear a bit in memory.
 // This instruction affects no registers in the microprocessor and no flags other than the carry flag which is reset.
-// Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
-// Implied	CLC 	$18	1	2
+// ---------------------------------------------------------------------------------------------
+// | Addressing Mode                | Assembly Language Form | Opcode | No. Bytes | No. Cycles |
+// |--------------------------------|----------------------------------------------------------|
+// | Implied                        | CLC                    | $18    |	1         | 2          |
+// |--------------------------------------------------------------------------------------------
 
-pub fn clc(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn clc(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
+    registers.set_carry_flag(false);
+}

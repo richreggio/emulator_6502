@@ -33,15 +33,15 @@ pub fn lax(memory: &mut Memory, registers: &mut Registers, operation: Operation)
     registers.x_register = value;
 
     if value == 0 {
-        registers.set_zero_flag(true)
+        registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false)
+        registers.set_zero_flag(false);
     }
 
     // Checking seventh bit of value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true)
+        registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false)
+        registers.set_negative_flag(false);
     }
 }
