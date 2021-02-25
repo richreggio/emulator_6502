@@ -54,6 +54,14 @@ mod tests {
     }
 
     #[test]
+    fn reset_memory() {
+        let mut memory = Memory::new_initalized();
+        memory.write_byte(0x8000, 0xFF);
+        memory.initalize();
+        assert_eq!(vec![0x00; 65536], memory.ram);
+    }
+
+    #[test]
     fn can_read_byte_from_memory() {
         let memory = Memory::new_initalized();
         assert_eq!(0x00, memory.read_byte(0x0100));
