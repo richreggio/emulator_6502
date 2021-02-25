@@ -1,6 +1,7 @@
 use crate::cpu::registers::Registers;
 use crate::memory::Memory;
 
+#[derive(Debug, PartialEq)]
 pub enum AddressingMode {
     Implied,
     Accumulator,
@@ -50,7 +51,7 @@ impl AddressingMode {
             AddressingMode::AbsoluteYIndex(second_byte) => {
                 let lo_byte = memory.read_byte(second_byte) as u16;
                 let high_byte = (memory.read_byte(second_byte + 1) as u16) << 8;
-                AddressingMode::AbsoluteXIndex(
+                AddressingMode::AbsoluteYIndex(
                     ((high_byte + lo_byte) + registers.y_register as u16) as usize,
                 )
             }
@@ -110,5 +111,168 @@ impl AddressingMode {
                 AddressingMode::Relative(offset as usize)
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_state() -> (Memory, Registers) {
+        let mut memory = Memory::new_initalized();
+        let mut registers = Registers::new_initalized();
+
+        registers.accumulator = 0x10;
+        registers.x_register = 0x03;
+        registers.y_register = 0x15;
+
+        let mut value: u8 = 0x00;
+        let mut address: usize = 0x0000;
+        // Creating junk data to be read
+        loop {
+            memory.write_byte(address, value);
+            value = value.wrapping_add(3);
+            address += 1;
+            if address > 0xFFFF {
+                break;
+            }
+        }
+
+        (memory, registers)
+    }
+
+    #[test]
+    fn implied_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::Implied;
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::Implied, ad_mode);
+    }
+
+    #[test]
+    fn accumulator_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::Accumulator;
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::Accumulator, ad_mode);
+    }
+
+    #[test]
+    fn immediate_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::Immediate(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::Immediate(0xFFFD), ad_mode);
+    }
+
+    #[test]
+    fn absolute_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::Absolute(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::Absolute(0xFAF7), ad_mode);
+    }
+
+    #[test]
+    fn absolute_x_index_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::AbsoluteXIndex(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::AbsoluteXIndex(0xFAFA), ad_mode);
+    }
+
+    #[test]
+    fn absolute_y_index_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::AbsoluteYIndex(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::AbsoluteYIndex(0xFB0C), ad_mode);
+    }
+
+    #[test]
+    fn absolute_indirect_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::AbsoluteIndirect(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::AbsoluteIndirect(0xE8E5), ad_mode);
+    }
+
+    #[test]
+    fn zero_page_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::ZeroPage(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::ZeroPage(0x00F7), ad_mode);
+    }
+
+    #[test]
+    fn zero_page_x_index_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::ZeroPageXIndex(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::ZeroPageXIndex(0x00FA), ad_mode);
+    }
+
+    #[test]
+    fn zero_page_y_index_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::ZeroPageYIndex(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::ZeroPageYIndex(0x000C), ad_mode);
+    }
+
+    #[test]
+    fn zero_page_x_index_indirect_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::ZeroPageXIndexIndirect(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::ZeroPageXIndexIndirect(0xF1EE), ad_mode);
+    }
+
+    #[test]
+    fn zero_page_y_index_indirect_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::ZeroPageYIndexIndirect(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        assert_eq!(AddressingMode::ZeroPageYIndexIndirect(0x2724), ad_mode);
+    }
+
+    // This test is currently broken because Relative needs to be implemented
+    #[test]
+    fn relative_mode() {
+        let (memory, registers) = setup_state();
+        let mut ad_mode = AddressingMode::Relative(registers.program_counter + 1);
+
+        ad_mode = ad_mode.process(&registers, &memory);
+
+        println!();
+        println!("Realtive isn't implemented at this time");
+        println!();
+
+        assert_eq!(AddressingMode::Relative(0x0000), ad_mode);
     }
 }
