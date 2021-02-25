@@ -6,6 +6,8 @@ use crate::cpu::addressing_mode::AddressingMode::{
 use crate::memory::{Memory, MAX_MEMORY};
 use rand::random;
 
+pub const RESET_VECTOR: usize = 0xFFFC;
+
 #[derive(Debug)]
 pub struct Registers {
     pub accumulator: u8,
@@ -17,14 +19,14 @@ pub struct Registers {
 }
 
 impl Registers {
-    pub fn new(starting_address: usize) -> Registers {
+    pub fn new() -> Registers {
         Registers {
             accumulator: random::<u8>(),
             x_register: random::<u8>(),
             y_register: random::<u8>(),
             stack_pointer: random::<u8>(),
             processor_status: random::<u8>(),
-            program_counter: starting_address,
+            program_counter: random::<usize>(),
         }
     }
 
@@ -37,9 +39,9 @@ impl Registers {
         self.program_counter = starting_address;
     }
 
-    pub fn new_initalized(starting_address: usize) -> Registers {
-        let mut registers = Registers::new(0);
-        registers.initalize(starting_address);
+    pub fn new_initalized() -> Registers {
+        let mut registers = Registers::new();
+        registers.initalize(RESET_VECTOR);
 
         registers
     }
@@ -197,8 +199,8 @@ mod tests {
 
     #[test]
     fn create_registers_in_known_state() {
-        let mut registers = Registers::new(0x0000);
-        registers.initalize(0xFFFC);
+        let mut registers = Registers::new();
+        registers.initalize(RESET_VECTOR);
         assert_eq!(0x00, registers.accumulator);
         assert_eq!(0x00, registers.x_register);
         assert_eq!(0x00, registers.y_register);
@@ -208,8 +210,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_carry_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_carry_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_carry_flag(true);
         assert!(registers.carry_flag_is_set());
@@ -218,8 +220,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_zero_flag_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_zero_flag_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_zero_flag(true);
         assert!(registers.zero_flag_is_set());
@@ -228,8 +230,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_interrupt_flag_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_interrupt_flag_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_interrupt_flag(true);
         assert!(registers.interrupt_flag_is_set());
@@ -238,8 +240,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_decimal_flag_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_decimal_flag_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_decimal_flag(true);
         assert!(registers.decimal_flag_is_set());
@@ -248,8 +250,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_break_flag_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_break_flag_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_break_flag(true);
         assert!(registers.break_flag_is_set());
@@ -258,8 +260,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_overflow_flag_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_overflow_flag_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_overflow_flag(true);
         assert!(registers.overflow_flag_is_set());
@@ -268,8 +270,8 @@ mod tests {
     }
 
     #[test]
-    fn check_if_negative_flag_is_set() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+    fn check_if_negative_flag_is_toggleable() {
+        let mut registers = Registers::new_initalized();
 
         registers.set_negative_flag(true);
         assert!(registers.negative_flag_is_set());
@@ -279,7 +281,7 @@ mod tests {
 
     #[test]
     fn stack_operations_working() {
-        let mut registers = Registers::new_initalized(0xFFFF);
+        let mut registers = Registers::new_initalized();
         let mut memory = Memory::new_initalized();
 
         assert_eq!(registers.stack_pointer, 0x00);
