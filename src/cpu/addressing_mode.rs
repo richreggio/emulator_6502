@@ -19,31 +19,38 @@ pub enum AddressingMode {
 }
 
 impl AddressingMode {
-    pub fn process(&self, registers: &Registers, memory: &Memory) -> AddressingMode {
+    pub fn process(&self, registers: &Registers, memory: &Memory) -> (AddressingMode, u8) {
         match *self {
             // Implied
             // In the implied addressing mode, the address containing the operand is implicitly stated in the operation code of the instruction.
-            AddressingMode::Implied => AddressingMode::Implied,
+            AddressingMode::Implied => (AddressingMode::Implied, 0),
             // Accumulator
             // This form of addressing is represented with a one byte instruction, implying an operation on the accumulator.
-            AddressingMode::Accumulator => AddressingMode::Accumulator,
+            AddressingMode::Accumulator => (AddressingMode::Accumulator, 0),
             // Immediate #$nn
             // In immediate addressing, the operand is contained in the second byte of the instruction, with no further memory addressing required.
-            AddressingMode::Immediate(second_byte) => AddressingMode::Immediate(second_byte),
+            AddressingMode::Immediate(second_byte) => (AddressingMode::Immediate(second_byte), 0),
             // Absolute $nnnn
             // In absolute addressing, the second byte of the instruction specifies the eight low order bits of the effective address while the third byte specifies the eight high order bits. Thus, the absolute addressing mode allows access to the entire 65 K bytes of addressable memory.
             AddressingMode::Absolute(second_byte) => {
                 let lo_byte = memory.read_byte(second_byte) as u16;
                 let high_byte = (memory.read_byte(second_byte + 1) as u16) << 8;
-                AddressingMode::Absolute((high_byte + lo_byte) as usize)
+                (AddressingMode::Absolute((high_byte + lo_byte) as usize), 0)
             }
             // Absolute X-Indexed $nnnn,X
             // This form of addressing is used in conjunction with the X index register. The effective address is formed by adding the contents of X to the address contained in the second and third bytes of the instruction. This mode allows the index register to contain the index or count value and the instruction to contain the base address. This type of indexing allows any location referencing and the index to modify multiple fields resulting in reduced coding and execution time.
             AddressingMode::AbsoluteXIndex(second_byte) => {
                 let lo_byte = memory.read_byte(second_byte) as u16;
                 let high_byte = (memory.read_byte(second_byte + 1) as u16) << 8;
-                AddressingMode::AbsoluteXIndex(
-                    ((high_byte + lo_byte) + registers.x_register as u16) as usize,
+                let address = (high_byte + lo_byte) + registers.x_register as u16;
+                let additional_cycles: u8 = if (address & 0xFF00) != high_byte {
+                    1
+                } else {
+                    0
+                };
+                (
+                    AddressingMode::AbsoluteXIndex((address) as usize),
+                    additional_cycles,
                 )
             }
             // Absolute Y-Indexed $nnnn,Y
@@ -51,8 +58,15 @@ impl AddressingMode {
             AddressingMode::AbsoluteYIndex(second_byte) => {
                 let lo_byte = memory.read_byte(second_byte) as u16;
                 let high_byte = (memory.read_byte(second_byte + 1) as u16) << 8;
-                AddressingMode::AbsoluteYIndex(
-                    ((high_byte + lo_byte) + registers.y_register as u16) as usize,
+                let address = (high_byte + lo_byte) + registers.y_register as u16;
+                let additional_cycles: u8 = if (address & 0xFF00) != high_byte {
+                    1
+                } else {
+                    0
+                };
+                (
+                    AddressingMode::AbsoluteYIndex((address) as usize),
+                    additional_cycles,
                 )
             }
             // Absolute Indirect ($nnnn)
@@ -61,27 +75,38 @@ impl AddressingMode {
                 let lo_byte = memory.read_byte(second_byte) as u16;
                 let high_byte = (memory.read_byte(second_byte + 1) as u16) << 8;
                 let indirect_address = (high_byte + lo_byte) as usize;
-
                 let indirect_lo_byte = memory.read_byte(indirect_address) as u16;
                 let indirect_high_byte = (memory.read_byte(indirect_address + 1) as u16) << 8;
-                AddressingMode::AbsoluteIndirect((indirect_high_byte + indirect_lo_byte) as usize)
+                (
+                    AddressingMode::AbsoluteIndirect(
+                        (indirect_high_byte + indirect_lo_byte) as usize,
+                    ),
+                    0,
+                )
             }
             // Zero Page $nn
             // The zero page instructions allow for shorter code and execution times by only fetching the second byte of the instruction and assuming a zero high address byte. Careful use of the zero page can result in significant increase in code efficiency.
-            AddressingMode::ZeroPage(second_byte) => {
-                AddressingMode::ZeroPage(memory.read_byte(second_byte) as usize)
-            }
+            AddressingMode::ZeroPage(second_byte) => (
+                AddressingMode::ZeroPage(memory.read_byte(second_byte) as usize),
+                0,
+            ),
             // Zero Page X-Indexed $nn,X
             // This form of addressing is used in conjunction with the X index register. The effective address is calculated by adding the second byte to the contents of the index register. Since this is a form of "Zero Page" addressing, the content of the second byte references a location in page zero. Additionally, due to the “Zero Page" addressing nature of this mode, no carry is added to the high order 8 bits of memory and crossing of page boundaries does not occur.
-            AddressingMode::ZeroPageXIndex(second_byte) => AddressingMode::ZeroPageXIndex(
-                ((memory.read_byte(second_byte) as u16 + registers.x_register as u16) % 0x0100)
-                    as usize,
+            AddressingMode::ZeroPageXIndex(second_byte) => (
+                AddressingMode::ZeroPageXIndex(
+                    ((memory.read_byte(second_byte) as u16 + registers.x_register as u16) % 0x0100)
+                        as usize,
+                ),
+                0,
             ),
             // Zero Page Y-Indexed $nn,Y
             // This form of addressing is used in conjunction with the Y index register. The effective address is calculated by adding the second byte to the contents of the index register. Since this is a form of "Zero Page" addressing, the content of the second byte references a location in page zero. Additionally, due to the “Zero Page" addressing nature of this mode, no carry is added to the high order 8 bits of memory and crossing of page boundaries does not occur.
-            AddressingMode::ZeroPageYIndex(second_byte) => AddressingMode::ZeroPageYIndex(
-                ((memory.read_byte(second_byte) as u16 + registers.y_register as u16) % 0x0100)
-                    as usize,
+            AddressingMode::ZeroPageYIndex(second_byte) => (
+                AddressingMode::ZeroPageYIndex(
+                    ((memory.read_byte(second_byte) as u16 + registers.y_register as u16) % 0x0100)
+                        as usize,
+                ),
+                0,
             ),
             // Zero Page X-Indexed Indirect ($nn,X)
             // In indexed indirect addressing, the second byte of the instruction is added to the contents of the X index register, discarding the carry. The result of this addition points to a memory location on page zero whose contents is the low order eight bits of the effective address. The next memory location in page zero contains the high order eight bits of the effective address. Both memory locations specifying the high and low order bytes of the effective address must be in page zero.
@@ -91,25 +116,32 @@ impl AddressingMode {
                     % 0x0100) as usize;
                 let lo_byte = memory.read_byte(zero_indirect_address) as u16;
                 let high_byte = (memory.read_byte(zero_indirect_address + 1) as u16) << 8;
-                AddressingMode::ZeroPageXIndexIndirect((high_byte + lo_byte) as usize)
+                (
+                    AddressingMode::ZeroPageXIndexIndirect((high_byte + lo_byte) as usize),
+                    0,
+                )
             }
             // Zero Page Y-Indexed Indirect ($nn),Y
             // In indirect indexed addressing, the second byte of the instruction points to a memory location in page zero. The contents of this memory location is added to the contents of the Y index register, the result being the low order eight bits of the effective address. The carry from this addition is added to the contents of the next page zero memory location, the result being the high order eight bits of the effective address.
             AddressingMode::ZeroPageYIndexIndirect(second_byte) => {
-                let zero_indirect_address = ((memory.read_byte(second_byte) as u16
-                    + registers.y_register as u16)
-                    % 0x0100) as usize;
-                let lo_byte = memory.read_byte(zero_indirect_address) as u16;
-                let high_byte = (memory.read_byte(zero_indirect_address + 1) as u16) << 8;
-                AddressingMode::ZeroPageYIndexIndirect((high_byte + lo_byte) as usize)
+                let zero_address = memory.read_byte(second_byte) as usize;
+                let lo_byte = memory.read_byte(zero_address) as u16;
+                let high_byte = (memory.read_byte((zero_address + 1) % 0x0100) as u16) << 8;
+                let zero_indirect_address = (high_byte + lo_byte) + registers.y_register as u16;
+                let additional_cycles: u8 = if (zero_indirect_address & 0xFF00) != high_byte {
+                    1
+                } else {
+                    0
+                };
+                (
+                    AddressingMode::ZeroPageYIndexIndirect(zero_indirect_address as usize),
+                    additional_cycles,
+                )
             }
             // Relative $nnnn
             // Relative addressing is used only with branch instructions and establishes a destination for the conditional branch.
             // The second byte of-the instruction becomes the operand which is an “Offset" added to the contents of the lower eight bits of the program counter when the counter is set at the next instruction. The range of the offset is —128 to +127 bytes from the next instruction.
-            AddressingMode::Relative(second_byte) => {
-                let offset = memory.read_byte(second_byte);
-                AddressingMode::Relative(offset as usize)
-            }
+            AddressingMode::Relative(second_byte) => (AddressingMode::Relative(second_byte), 0),
         }
     }
 }
@@ -144,9 +176,9 @@ mod tests {
     #[test]
     fn implied_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::Implied;
+        let ad_mode = AddressingMode::Implied;
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::Implied, ad_mode);
     }
@@ -154,9 +186,9 @@ mod tests {
     #[test]
     fn accumulator_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::Accumulator;
+        let ad_mode = AddressingMode::Accumulator;
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::Accumulator, ad_mode);
     }
@@ -164,9 +196,9 @@ mod tests {
     #[test]
     fn immediate_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::Immediate(registers.program_counter + 1);
+        let ad_mode = AddressingMode::Immediate(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::Immediate(0xFFFD), ad_mode);
     }
@@ -174,9 +206,9 @@ mod tests {
     #[test]
     fn absolute_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::Absolute(registers.program_counter + 1);
+        let ad_mode = AddressingMode::Absolute(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::Absolute(0xFAF7), ad_mode);
     }
@@ -184,9 +216,9 @@ mod tests {
     #[test]
     fn absolute_x_index_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::AbsoluteXIndex(registers.program_counter + 1);
+        let ad_mode = AddressingMode::AbsoluteXIndex(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::AbsoluteXIndex(0xFAFA), ad_mode);
     }
@@ -194,9 +226,9 @@ mod tests {
     #[test]
     fn absolute_y_index_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::AbsoluteYIndex(registers.program_counter + 1);
+        let ad_mode = AddressingMode::AbsoluteYIndex(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::AbsoluteYIndex(0xFB0C), ad_mode);
     }
@@ -204,9 +236,9 @@ mod tests {
     #[test]
     fn absolute_indirect_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::AbsoluteIndirect(registers.program_counter + 1);
+        let ad_mode = AddressingMode::AbsoluteIndirect(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::AbsoluteIndirect(0xE8E5), ad_mode);
     }
@@ -214,9 +246,9 @@ mod tests {
     #[test]
     fn zero_page_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::ZeroPage(registers.program_counter + 1);
+        let ad_mode = AddressingMode::ZeroPage(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::ZeroPage(0x00F7), ad_mode);
     }
@@ -224,9 +256,9 @@ mod tests {
     #[test]
     fn zero_page_x_index_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::ZeroPageXIndex(registers.program_counter + 1);
+        let ad_mode = AddressingMode::ZeroPageXIndex(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::ZeroPageXIndex(0x00FA), ad_mode);
     }
@@ -234,9 +266,9 @@ mod tests {
     #[test]
     fn zero_page_y_index_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::ZeroPageYIndex(registers.program_counter + 1);
+        let ad_mode = AddressingMode::ZeroPageYIndex(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::ZeroPageYIndex(0x000C), ad_mode);
     }
@@ -244,9 +276,9 @@ mod tests {
     #[test]
     fn zero_page_x_index_indirect_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::ZeroPageXIndexIndirect(registers.program_counter + 1);
+        let ad_mode = AddressingMode::ZeroPageXIndexIndirect(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
         assert_eq!(AddressingMode::ZeroPageXIndexIndirect(0xF1EE), ad_mode);
     }
@@ -254,25 +286,21 @@ mod tests {
     #[test]
     fn zero_page_y_index_indirect_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::ZeroPageYIndexIndirect(registers.program_counter + 1);
+        let ad_mode = AddressingMode::ZeroPageYIndexIndirect(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
-        assert_eq!(AddressingMode::ZeroPageYIndexIndirect(0x2724), ad_mode);
+        assert_eq!(AddressingMode::ZeroPageYIndexIndirect(0xE8FA), ad_mode);
     }
 
     // This test is currently broken because Relative needs to be implemented
     #[test]
     fn relative_mode() {
         let (memory, registers) = setup_state();
-        let mut ad_mode = AddressingMode::Relative(registers.program_counter + 1);
+        let ad_mode = AddressingMode::Relative(registers.program_counter + 1);
 
-        ad_mode = ad_mode.process(&registers, &memory);
+        let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
-        println!();
-        println!("Realtive isn't implemented at this time");
-        println!();
-
-        assert_eq!(AddressingMode::Relative(0x0000), ad_mode);
+        assert_eq!(AddressingMode::Relative(0xFFFD), ad_mode);
     }
 }
