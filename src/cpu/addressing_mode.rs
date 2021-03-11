@@ -315,6 +315,6 @@ mod tests {
 
         let (ad_mode, _additional_cycles) = ad_mode.process(&registers, &memory);
 
-        assert_eq!(AddressingMode::Relative(0xFFFD), ad_mode);
+        assert_eq!(AddressingMode::Relative(0xFFF7), ad_mode);
     }
 }

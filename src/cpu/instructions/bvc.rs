@@ -17,11 +17,11 @@ pub fn bvc(_memory: &mut Memory, registers: &mut Registers, mut operation: Opera
         operation.cycles += 1;
 
         let offset = match operation.addressing_mode {
-            AdMode::Relative(offset) => offset,
+            AdMode::Relative(offset) => offset as u16,
             _ => 0,
         };
 
-        let new_address = registers.program_counter + offset;
+        let new_address = offset.wrapping_add(registers.program_counter as u16) as usize;
 
         // Page crossed
         if new_address & 0xFF00 != registers.program_counter & 0xFF00 {
