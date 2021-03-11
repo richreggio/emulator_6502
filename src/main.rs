@@ -1,53 +1,62 @@
-// use emulator_6502::cpu::addressing_mode;
 use emulator_6502::cpu::operation::Operation;
 use emulator_6502::cpu::registers::Registers;
 use emulator_6502::memory::Memory;
-use std::fs::read;
+// extern crate sdl2;
+// use sdl2::event::Event;
+// use sdl2::keyboard::Keycode;
+// use sdl2::pixels::Color;
+// use std::time::Duration;
 
 fn main() {
+    // Create the 6502 and memory
     let mut memory = Memory::new_initalized();
     let mut registers = Registers::new_initalized();
 
-    load_roms(&mut memory);
-    display_status(&registers);
+    // // Setting up window
+    // let sdl_context = sdl2::init().unwrap();
+    // let video_subsystem = sdl_context.video().unwrap();
+
+    // let window = video_subsystem
+    //     .window("richreggio's NES emulator", 800, 600)
+    //     .position_centered()
+    //     .build()
+    //     .unwrap();
+
+    // let mut canvas = window.into_canvas().present_vsync().build().unwrap();
+
+    // canvas.set_draw_color(Color::RGB(0, 255, 255));
+    // canvas.clear();
+    // canvas.present();
+    // let mut event_pump = sdl_context.event_pump().unwrap();
+    // let mut i = 0;
+    // 'running: loop {
+    //     i = (i + 1) % 255;
+    //     canvas.set_draw_color(Color::RGB(i, 64, 255 - i));
+    //     canvas.clear();
+    //     for event in event_pump.poll_iter() {
+    //         match event {
+    //             Event::Quit { .. }
+    //             | Event::KeyDown {
+    //                 keycode: Some(Keycode::Escape),
+    //                 ..
+    //             } => break 'running,
+    //             _ => {}
+    //         }
+    //     }
+    //     // The rest of the game loop goes here...
+
+    //     canvas.present();
+    //     ::std::thread::sleep(Duration::new(0, 1_000_000_000u32 / 60));
+    // }
 
     loop {
+        // Get next operation
         let operation = Operation::next(&mut registers, &memory);
+        // Perform the next operation
         execute(&mut memory, &mut registers, operation);
     }
 }
 
 fn execute(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
     (operation.instruction_function)(memory, registers, operation);
-}
-
-fn display_status(registers: &Registers) {
-    println!("The current state of the CPU is : {:?}", registers);
-}
-
-fn load_roms(memory: &mut Memory) {
-    let basic_rom_data = read("/roms/basic.901226-01.bin").unwrap();
-    let kernal_rom_data = read("/roms/kernal.901227-03.bin").unwrap();
-    let character_rom_data = read("/roms/characters.901225-01.bin").unwrap();
-
-    // BASIC ROM visible at $A000-$BFFF
-    let mut target_address = 0xA000;
-    for value in basic_rom_data {
-        memory.write_byte(target_address, value);
-        target_address += 1
-    }
-
-    // KERNAL ROM visible at $E000-$FFFF
-    target_address = 0xE000;
-    for value in kernal_rom_data {
-        memory.write_byte(target_address, value);
-        target_address += 1
-    }
-
-    // Character ROM visible at $D000-$DFFF
-    target_address = 0xD000;
-    for value in character_rom_data {
-        memory.write_byte(target_address, value);
-        target_address += 1
-    }
 }

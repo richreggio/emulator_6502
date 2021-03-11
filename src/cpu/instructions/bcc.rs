@@ -12,4 +12,22 @@ use super::*;
 // | t: =1 if branch is taken       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn bcc(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn bcc(_memory: &mut Memory, registers: &mut Registers, mut operation: Operation) {
+    if !registers.carry_flag_is_set() {
+        operation.cycles += 1;
+
+        let offset = match operation.addressing_mode {
+            AdMode::Relative(offset) => offset,
+            _ => 0,
+        };
+
+        let new_address = registers.program_counter + offset;
+
+        // Page crossed
+        if new_address & 0xFF00 != registers.program_counter & 0xFF00 {
+            operation.cycles += 1;
+        }
+
+        registers.program_counter = new_address;
+    }
+}

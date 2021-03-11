@@ -1,5 +1,8 @@
 // 6502 processor can only address a max of 65536 bytes of memory
 pub const MAX_MEMORY: usize = 1024 * 64;
+pub const NMI_VECTOR: usize = 0xFFFA;
+pub const RESET_VECTOR: usize = 0xFFFC;
+pub const IRQ_VECTOR: usize = 0xFFFE;
 
 #[derive(Debug)]
 pub struct Memory {
@@ -32,14 +35,6 @@ impl Memory {
 
     pub fn write_byte(&mut self, address: usize, value: u8) {
         self.ram[address] = value;
-    }
-}
-
-impl Default for Memory {
-    fn default() -> Self {
-        Memory {
-            ram: vec![0x00; MAX_MEMORY],
-        }
     }
 }
 

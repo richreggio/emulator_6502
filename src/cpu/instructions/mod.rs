@@ -1,7 +1,7 @@
 pub use crate::cpu::addressing_mode::AddressingMode as AdMode;
 pub use crate::cpu::operation::Operation;
 pub use crate::cpu::registers::Registers;
-pub use crate::memory::Memory;
+pub use crate::memory::{Memory, IRQ_VECTOR, NMI_VECTOR, RESET_VECTOR};
 
 // Load instructions - 12 total
 mod las;

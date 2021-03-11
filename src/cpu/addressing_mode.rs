@@ -76,7 +76,12 @@ impl AddressingMode {
                 let high_byte = (memory.read_byte(second_byte + 1) as u16) << 8;
                 let indirect_address = (high_byte + lo_byte) as usize;
                 let indirect_lo_byte = memory.read_byte(indirect_address) as u16;
-                let indirect_high_byte = (memory.read_byte(indirect_address + 1) as u16) << 8;
+                // Hardware bug in 6502 - cannot cross page boundary so read for high byte wraps to beginning of the page
+                let indirect_high_byte = if indirect_address & 0x00FF == 0x00FF {
+                    (memory.read_byte(indirect_address & 0xFF00) as u16) << 8
+                } else {
+                    (memory.read_byte(indirect_address + 1) as u16) << 8
+                };
                 (
                     AddressingMode::AbsoluteIndirect(
                         (indirect_high_byte + indirect_lo_byte) as usize,
@@ -115,7 +120,8 @@ impl AddressingMode {
                     + registers.x_register as u16)
                     % 0x0100) as usize;
                 let lo_byte = memory.read_byte(zero_indirect_address) as u16;
-                let high_byte = (memory.read_byte(zero_indirect_address + 1) as u16) << 8;
+                let high_byte =
+                    (memory.read_byte((zero_indirect_address + 1) % 0x0100) as u16) << 8;
                 (
                     AddressingMode::ZeroPageXIndexIndirect((high_byte + lo_byte) as usize),
                     0,
@@ -141,7 +147,15 @@ impl AddressingMode {
             // Relative $nnnn
             // Relative addressing is used only with branch instructions and establishes a destination for the conditional branch.
             // The second byte of-the instruction becomes the operand which is an “Offset" added to the contents of the lower eight bits of the program counter when the counter is set at the next instruction. The range of the offset is —128 to +127 bytes from the next instruction.
-            AddressingMode::Relative(second_byte) => (AddressingMode::Relative(second_byte), 0),
+            AddressingMode::Relative(second_byte) => {
+                let mut offset = memory.read_byte(second_byte) as usize;
+
+                if offset & 0x80 == 0b1000_0000 {
+                    offset += 0xFF00;
+                }
+
+                (AddressingMode::Relative(offset), 0)
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ use super::*;
 // |--------------------------------------------------------------------------------------------
 
 pub fn adc(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
-    let value = match operation.addressing_mode {
+    let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => memory.read_byte(address),
         AdMode::Absolute(address) => memory.read_byte(address),
         AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
@@ -32,7 +32,7 @@ pub fn adc(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         _ => 0,
     };
 
-    let (mut total, carry) = value.overflowing_add(registers.accumulator);
+    let (mut total, carry) = tmp_value.overflowing_add(registers.accumulator);
 
     if registers.carry_flag_is_set() {
         total += 1;
@@ -44,9 +44,10 @@ pub fn adc(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         registers.set_carry_flag(false);
     }
 
-    // If the total's 7th bit and the accumulators 7th bit are different
-    // then result exceeded +127 or -128 so set overflow flag
-    if (total & 0b1000_0000) ^ (registers.accumulator & 0b1000_0000) == 0b1000_0000 {
+    if ((registers.accumulator & 0b1000_0000) ^ (total & 0b1000_0000))
+        & !((registers.accumulator & 0b1000_0000) ^ (tmp_value & 0b1000_0000))
+        == 0b1000_0000
+    {
         registers.set_overflow_flag(true);
     } else {
         registers.set_overflow_flag(false);

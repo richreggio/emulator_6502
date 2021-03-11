@@ -34,8 +34,8 @@ impl Registers {
         self.accumulator = 0x00;
         self.x_register = 0x00;
         self.y_register = 0x00;
-        self.stack_pointer = 0x00;
-        self.processor_status = 0b0000_0000;
+        self.stack_pointer = 0xFD;
+        self.processor_status = 0b0010_0000;
         self.program_counter = starting_address;
     }
 
@@ -204,8 +204,8 @@ mod tests {
         assert_eq!(0x00, registers.accumulator);
         assert_eq!(0x00, registers.x_register);
         assert_eq!(0x00, registers.y_register);
-        assert_eq!(0x00, registers.stack_pointer);
-        assert_eq!(0b0000_0000, registers.processor_status);
+        assert_eq!(0xFD, registers.stack_pointer);
+        assert_eq!(0b0010_0000, registers.processor_status);
         assert_eq!(0xFFFC, registers.program_counter);
     }
 
@@ -284,7 +284,7 @@ mod tests {
         let mut registers = Registers::new_initalized();
         let mut memory = Memory::new_initalized();
 
-        assert_eq!(registers.stack_pointer, 0x00);
+        assert_eq!(registers.stack_pointer, 0xFD);
 
         registers.stack_push(&mut memory, 0xA1);
         registers.stack_push(&mut memory, 0xFF);
@@ -292,7 +292,7 @@ mod tests {
         registers.stack_push(&mut memory, 0xB5);
         registers.stack_push(&mut memory, 0x66);
 
-        assert_eq!(registers.stack_pointer, 0xFB);
+        assert_eq!(registers.stack_pointer, 0xF8);
 
         assert_eq!(registers.stack_pull(&memory), 0x66);
         assert_eq!(registers.stack_pull(&memory), 0xB5);
@@ -300,6 +300,6 @@ mod tests {
         assert_eq!(registers.stack_pull(&memory), 0xFF);
         assert_eq!(registers.stack_pull(&memory), 0xA1);
 
-        assert_eq!(registers.stack_pointer, 0x00);
+        assert_eq!(registers.stack_pointer, 0xFD);
     }
 }
