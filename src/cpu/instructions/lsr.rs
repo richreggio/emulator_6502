@@ -15,39 +15,39 @@ use super::*;
 // | p: =1 if page is crossed       |                        |          |           |            |
 // |----------------------------------------------------------------------------------------------
 
-pub fn lsr(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn lsr(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::Accumulator => registers.accumulator,
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndex(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Accumulator => cpu.registers.accumulator,
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid LSR operation"),
     };
 
     // Zeroth bit becomes the carry flag
     if tmp_value & 0b0000_0001 == 0b0000_0001 {
-        registers.set_carry_flag(true);
+        cpu.registers.set_carry_flag(true);
     } else {
-        registers.set_carry_flag(false);
+        cpu.registers.set_carry_flag(false);
     }
 
     let value = tmp_value >> 1;
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
-    registers.set_negative_flag(false);
+    cpu.registers.set_negative_flag(false);
 
     match operation.addressing_mode {
-        AdMode::Accumulator => registers.accumulator = value,
-        AdMode::Absolute(address) => memory.write_byte(address, value),
-        AdMode::AbsoluteXIndex(address) => memory.write_byte(address, value),
-        AdMode::ZeroPage(address) => memory.write_byte(address, value),
-        AdMode::ZeroPageXIndex(address) => memory.write_byte(address, value),
-        _ => (),
+        AdMode::Accumulator => cpu.registers.accumulator = value,
+        AdMode::Absolute(address) => cpu.ram.write_byte(address, value),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPage(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.write_byte(address, value),
+        _ => panic!("Invalid LSR operation"),
     };
 }

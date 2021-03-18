@@ -10,21 +10,21 @@ use super::*;
 // | Implied                        | DEY                    | $88    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn dey(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    let value = registers.y_register.wrapping_sub(1);
+pub fn dey(cpu: &mut CPU, _operation: &mut Operation) {
+    let value = cpu.registers.y_register.wrapping_sub(1);
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
-    registers.y_register = value;
+    cpu.registers.y_register = value;
 }

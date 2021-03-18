@@ -10,20 +10,20 @@ use super::*;
 // | Implied                        | TXA                    | $8A    | 1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn txa(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.accumulator = registers.x_register;
-    let value = registers.accumulator;
+pub fn txa(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers.accumulator = cpu.registers.x_register;
+    let value = cpu.registers.accumulator;
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit of value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 }

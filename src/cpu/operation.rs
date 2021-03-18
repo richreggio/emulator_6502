@@ -6,10 +6,9 @@ use AddressingMode::{
 
 use crate::cpu::addressing_mode::AddressingMode;
 use crate::cpu::instructions;
-use crate::cpu::registers::Registers;
-use crate::memory::Memory;
+use crate::cpu::CPU;
 
-type InstructionFunction = fn(&mut Memory, &mut Registers, Operation);
+type InstructionFunction = fn(&mut CPU, &mut Operation);
 
 pub struct Operation {
     pub addressing_mode: AddressingMode,
@@ -18,17 +17,20 @@ pub struct Operation {
 }
 
 impl Operation {
-    pub fn next(registers: &mut Registers, memory: &Memory) -> Operation {
-        let opcode = memory.read_byte(registers.program_counter);
+    pub fn next(cpu: &mut CPU) -> Operation {
+        // Which operation is next to be executed
+        let opcode = cpu.ram.read_byte(cpu.registers.program_counter);
 
+        // What the operation addressing mode is, the function that perform it, and how many cycles it takes to complete
         let (addressing_mode, instruction_function, mut cycles) =
-            resolve_opcode(opcode, registers.program_counter + 1);
+            resolve_opcode(opcode, cpu.registers.program_counter + 1);
 
-        let (addressing_mode, additional_cycles) = addressing_mode.process(registers, memory);
+        // Does the work of calculating the addressing mode's final value
+        let (addressing_mode, additional_cycles) = addressing_mode.process(cpu);
 
         cycles += additional_cycles;
 
-        registers.increment_program_counter(&addressing_mode);
+        cpu.registers.increment_program_counter(&addressing_mode);
 
         Operation {
             addressing_mode,

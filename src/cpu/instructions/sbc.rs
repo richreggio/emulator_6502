@@ -20,55 +20,55 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sbc(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn sbc(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::Immediate(address) => memory.read_byte(address),
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
-        AdMode::AbsoluteYIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndexIndirect(address) => memory.read_byte(address),
-        AdMode::ZeroPageYIndexIndirect(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Immediate(address) => cpu.ram.read_byte(address),
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteYIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndexIndirect(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageYIndexIndirect(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid SBC operation"),
     };
 
-    let (mut total, mut carry) = registers.accumulator.overflowing_sub(tmp_value);
+    let (mut total, mut carry) = cpu.registers.accumulator.overflowing_sub(tmp_value);
 
-    if !registers.carry_flag_is_set() && total != 0 {
+    if !cpu.registers.carry_flag_is_set() && total != 0 {
         total -= 1;
-    } else if !registers.carry_flag_is_set() {
+    } else if !cpu.registers.carry_flag_is_set() {
         total = 0xFF;
         carry = true;
     }
 
     if carry {
-        registers.set_carry_flag(true);
+        cpu.registers.set_carry_flag(true);
     } else {
-        registers.set_carry_flag(false);
+        cpu.registers.set_carry_flag(false);
     }
 
-    if ((registers.accumulator & 0b1000_0000) ^ (total & 0b1000_0000))
-        & !((registers.accumulator & 0b1000_0000) ^ (tmp_value & 0b1000_0000))
+    if ((cpu.registers.accumulator & 0b1000_0000) ^ (total & 0b1000_0000))
+        & !((cpu.registers.accumulator & 0b1000_0000) ^ (tmp_value & 0b1000_0000))
         == 0b1000_0000
     {
-        registers.set_overflow_flag(true);
+        cpu.registers.set_overflow_flag(true);
     } else {
-        registers.set_overflow_flag(false);
+        cpu.registers.set_overflow_flag(false);
     }
 
     if total == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (total & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
-    registers.accumulator = total;
+    cpu.registers.accumulator = total;
 }

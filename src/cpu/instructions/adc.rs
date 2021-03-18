@@ -19,100 +19,99 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn adc(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn adc(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::Immediate(address) => memory.read_byte(address),
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
-        AdMode::AbsoluteYIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndexIndirect(address) => memory.read_byte(address),
-        AdMode::ZeroPageYIndexIndirect(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Immediate(address) => cpu.ram.read_byte(address),
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteYIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndexIndirect(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageYIndexIndirect(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid ADC operation"),
     };
 
-    let (mut total, carry) = tmp_value.overflowing_add(registers.accumulator);
+    let (mut total, carry) = tmp_value.overflowing_add(cpu.registers.accumulator);
 
-    if registers.carry_flag_is_set() {
+    if cpu.registers.carry_flag_is_set() {
         total += 1;
     }
 
     if carry {
-        registers.set_carry_flag(true);
+        cpu.registers.set_carry_flag(true);
     } else {
-        registers.set_carry_flag(false);
+        cpu.registers.set_carry_flag(false);
     }
 
-    if ((registers.accumulator & 0b1000_0000) ^ (total & 0b1000_0000))
-        & !((registers.accumulator & 0b1000_0000) ^ (tmp_value & 0b1000_0000))
+    if ((cpu.registers.accumulator & 0b1000_0000) ^ (total & 0b1000_0000))
+        & !((cpu.registers.accumulator & 0b1000_0000) ^ (tmp_value & 0b1000_0000))
         == 0b1000_0000
     {
-        registers.set_overflow_flag(true);
+        cpu.registers.set_overflow_flag(true);
     } else {
-        registers.set_overflow_flag(false);
+        cpu.registers.set_overflow_flag(false);
     }
 
     if total == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (total & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
-    registers.accumulator = total;
+    cpu.registers.accumulator = total;
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    fn adc_setup(accumulator_value: u8, memory_value: u8) -> (Memory, Registers, Operation) {
-        let mut memory = Memory::new_initalized();
-        let mut registers = Registers::new();
-        registers.initalize(0x8000);
+    fn adc_setup(accumulator_value: u8, memory_value: u8) -> (CPU, Operation) {
+        let mut cpu = CPU::new();
+        cpu.registers.initalize(0x8000);
 
         // Using opcode for Immediate addressing to simplify testing
-        memory.write_byte(0x8000, 0x69);
+        cpu.ram.write_byte(0x8000, 0x69);
 
         // Setting memory value to be added
-        memory.write_byte(0x8001, memory_value);
+        cpu.ram.write_byte(0x8001, memory_value);
 
         // Setting accumulator value
-        registers.accumulator = accumulator_value;
+        cpu.registers.accumulator = accumulator_value;
 
-        let operation = Operation::next(&mut registers, &memory);
+        let operation = Operation::next(&mut cpu);
 
-        (memory, registers, operation)
+        (cpu, operation)
     }
 
     #[test]
     fn adc_integers_no_overflow() {
-        let (mut memory, mut registers, operation) = adc_setup(0x15, 0x20);
+        let (mut cpu, mut operation) = adc_setup(0x15, 0x20);
 
-        adc(&mut memory, &mut registers, operation);
+        adc(&mut cpu, &mut operation);
 
-        let result = registers.accumulator;
+        let result = cpu.registers.accumulator;
 
         assert_eq!(result, 0x35);
-        assert!(!registers.carry_flag_is_set());
+        assert!(!cpu.registers.carry_flag_is_set());
     }
 
     #[test]
     fn adc_integers_with_overflow() {
-        let (mut memory, mut registers, operation) = adc_setup(0xFF, 0x05);
+        let (mut cpu, mut operation) = adc_setup(0xFF, 0x05);
 
-        adc(&mut memory, &mut registers, operation);
+        adc(&mut cpu, &mut operation);
 
-        let result = registers.accumulator;
+        let result = cpu.registers.accumulator;
 
         assert_eq!(result, 0x04);
-        assert!(registers.carry_flag_is_set());
+        assert!(cpu.registers.carry_flag_is_set());
     }
 }

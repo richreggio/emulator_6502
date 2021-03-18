@@ -19,7 +19,7 @@ pub struct Registers {
 }
 
 impl Registers {
-    pub fn new() -> Registers {
+    fn new() -> Registers {
         Registers {
             accumulator: random::<u8>(),
             x_register: random::<u8>(),

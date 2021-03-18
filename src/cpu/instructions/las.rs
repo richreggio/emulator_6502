@@ -11,28 +11,28 @@ use super::*;
 // | p: =1 if page is crossed.    |                        |        |           |            |
 // |------------------------------------------------------------------------------------------
 
-pub fn las(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn las(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::AbsoluteYIndex(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::AbsoluteYIndex(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid LAS operation"),
     };
 
-    let value = tmp_value & registers.stack_pointer;
+    let value = tmp_value & cpu.registers.stack_pointer;
 
-    registers.accumulator = value;
-    registers.x_register = value;
-    registers.stack_pointer = value;
+    cpu.registers.accumulator = value;
+    cpu.registers.x_register = value;
+    cpu.registers.stack_pointer = value;
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit of value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 }

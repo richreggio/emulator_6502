@@ -13,12 +13,12 @@ use super::*;
 // | p: =1 if page is crossed       |                        |          |           |            |
 // |----------------------------------------------------------------------------------------------
 
-pub fn sty(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn sty(cpu: &mut CPU, operation: &mut Operation) {
     let address = match operation.addressing_mode {
         AdMode::Absolute(address) => address,
         AdMode::ZeroPage(address) => address,
         AdMode::ZeroPageYIndex(address) => address,
-        _ => 0,
+        _ => panic!("Invalid STY operation"),
     };
-    memory.write_byte(address, registers.y_register);
+    cpu.ram.write_byte(address, cpu.registers.y_register);
 }

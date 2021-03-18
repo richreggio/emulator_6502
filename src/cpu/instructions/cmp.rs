@@ -18,37 +18,37 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn cmp(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn cmp(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::Immediate(address) => memory.read_byte(address),
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
-        AdMode::AbsoluteYIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndexIndirect(address) => memory.read_byte(address),
-        AdMode::ZeroPageYIndexIndirect(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Immediate(address) => cpu.ram.read_byte(address),
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteYIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndexIndirect(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageYIndexIndirect(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid CMP operation"),
     };
 
-    let (value, carry) = registers.accumulator.overflowing_sub(tmp_value);
+    let (value, carry) = cpu.registers.accumulator.overflowing_sub(tmp_value);
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit of value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
     if carry {
-        registers.set_carry_flag(true);
+        cpu.registers.set_carry_flag(true);
     } else {
-        registers.set_carry_flag(false);
+        cpu.registers.set_carry_flag(false);
     }
 }

@@ -10,20 +10,20 @@ use super::*;
 // | Implied                        | TSX                    | $BA    | 1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn tsx(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.x_register = registers.stack_pointer;
-    let value = registers.x_register;
+pub fn tsx(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers.x_register = cpu.registers.stack_pointer;
+    let value = cpu.registers.x_register;
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit of value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 }

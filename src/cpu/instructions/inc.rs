@@ -13,35 +13,35 @@ use super::*;
 // | Zero Page X-Indexed            | INC $nn,X              | $F6    | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn inc(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn inc(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndex(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid INC operation"),
     };
 
     let value = tmp_value.wrapping_add(1);
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
     match operation.addressing_mode {
-        AdMode::Absolute(address) => memory.write_byte(address, value),
-        AdMode::AbsoluteXIndex(address) => memory.write_byte(address, value),
-        AdMode::ZeroPage(address) => memory.write_byte(address, value),
-        AdMode::ZeroPageXIndex(address) => memory.write_byte(address, value),
-        _ => (),
+        AdMode::Absolute(address) => cpu.ram.write_byte(address, value),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPage(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.write_byte(address, value),
+        _ => panic!("Invalid INC operation"),
     };
 }

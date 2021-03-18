@@ -11,21 +11,21 @@ use super::*;
 // | Implied                        | INX                    | $E8    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn inx(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    let value = registers.x_register.wrapping_add(1);
+pub fn inx(cpu: &mut CPU, _operation: &mut Operation) {
+    let value = cpu.registers.x_register.wrapping_add(1);
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
-    registers.x_register = value;
+    cpu.registers.x_register = value;
 }

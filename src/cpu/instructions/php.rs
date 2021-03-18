@@ -10,6 +10,7 @@ use super::*;
 // | Implied                        | PHP                    | $08    | 1         | 3          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn php(memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.stack_push(memory, registers.get_processor_status());
+pub fn php(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers
+        .stack_push(&mut cpu.ram, cpu.registers.get_processor_status());
 }

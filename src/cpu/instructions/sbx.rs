@@ -6,5 +6,10 @@ use super::*;
 // This instruction affects the index register X. The carry flag is set if the result is greater than or equal to 0. The carry flag is reset when the result is less than 0, indicating a borrow. The negative flag is set if the result in index register X has bit 7 on, otherwise it is reset. The Z flag is set if the result in index register X is 0, otherwise it is reset. The over­flow flag not affected at all.
 // Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
 // Immediate	SBX #$nn	$CB*	2	2
+// -----------------------------------------------------------------------------------------------
+// | Addressing Mode                | Assembly Language Form | Opcode   | No. Bytes	| No. Cycles |
+// |--------------------------------|------------------------------------------------------------|
+// | Immediate                      | SBX #$nn               | $CB*     | 2	        | 2          |
+// |----------------------------------------------------------------------------------------------
 
-pub fn sbx(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn sbx(_cpu: &mut CPU, _operation: &mut Operation) {}

@@ -10,6 +10,7 @@ use super::*;
 // | Implied                        | PHA                    | $48      | 1         | 3          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn pha(memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.stack_push(memory, registers.accumulator);
+pub fn pha(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers
+        .stack_push(&mut cpu.ram, cpu.registers.accumulator);
 }

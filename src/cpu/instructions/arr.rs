@@ -13,4 +13,40 @@ use super::*;
 // | Immediate                      | ARR #$nn               | $6B*   | 2         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn arr(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn arr(cpu: &mut CPU, operation: &mut Operation) {
+    let tmp_value = match operation.addressing_mode {
+        AdMode::Immediate(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid ARR operation"),
+    };
+
+    let old_carry_flag = cpu.registers.carry_flag_is_set();
+
+    let mut value = cpu.registers.accumulator & tmp_value;
+
+    if value & 0b0000_0001 == 0b0000_0001 {
+        cpu.registers.set_carry_flag(true);
+    } else {
+        cpu.registers.set_carry_flag(false);
+    }
+
+    value = value >> 1;
+
+    if old_carry_flag {
+        value += 0b1000_0000;
+    }
+
+    if value == 0 {
+        cpu.registers.set_zero_flag(true);
+    } else {
+        cpu.registers.set_zero_flag(false);
+    }
+
+    // Checking seventh bit value
+    if (value & 0b1000_0000) == 0b1000_0000 {
+        cpu.registers.set_negative_flag(true);
+    } else {
+        cpu.registers.set_negative_flag(false);
+    }
+
+    cpu.registers.accumulator = value;
+}

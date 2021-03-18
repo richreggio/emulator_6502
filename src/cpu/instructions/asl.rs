@@ -14,44 +14,44 @@ use super::*;
 // | Zero Page X-Indexed            | ASL $nn,X              | $16    | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn asl(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn asl(cpu: &mut CPU, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
-        AdMode::Accumulator => registers.accumulator,
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteXIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndex(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Accumulator => cpu.registers.accumulator,
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid ASL operation"),
     };
 
     // Seventh bit becomes the carry flag
     if tmp_value & 0b1000_0000 == 0b1000_0000 {
-        registers.set_carry_flag(true);
+        cpu.registers.set_carry_flag(true);
     } else {
-        registers.set_carry_flag(false);
+        cpu.registers.set_carry_flag(false);
     }
 
     let value = tmp_value << 1;
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
     match operation.addressing_mode {
-        AdMode::Accumulator => registers.accumulator = value,
-        AdMode::Absolute(address) => memory.write_byte(address, value),
-        AdMode::AbsoluteXIndex(address) => memory.write_byte(address, value),
-        AdMode::ZeroPage(address) => memory.write_byte(address, value),
-        AdMode::ZeroPageXIndex(address) => memory.write_byte(address, value),
-        _ => (),
+        AdMode::Accumulator => cpu.registers.accumulator = value,
+        AdMode::Absolute(address) => cpu.ram.write_byte(address, value),
+        AdMode::AbsoluteXIndex(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPage(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPageXIndex(address) => cpu.ram.write_byte(address, value),
+        _ => panic!("Invalid ASL operation"),
     };
 }

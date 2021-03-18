@@ -36,6 +36,21 @@ impl Memory {
     pub fn write_byte(&mut self, address: usize, value: u8) {
         self.ram[address] = value;
     }
+
+    pub fn load_program(&mut self, data: Vec<u8>) {
+        // Start location for any program loaded into memory
+        let mut address = 0x0600;
+
+        for byte in data {
+            self.ram[address] = byte;
+            address += 1;
+        }
+
+        let address_lo_byte = (address & 0x00FF) as u8;
+        let address_high_byte = (address >> 8) as u8;
+        self.ram[RESET_VECTOR] = address_lo_byte;
+        self.ram[RESET_VECTOR + 1] = address_high_byte;
+    }
 }
 
 #[cfg(test)]

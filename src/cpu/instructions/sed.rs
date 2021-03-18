@@ -11,6 +11,6 @@ use super::*;
 // | Implied                        | SED                    | $F8    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sed(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.set_decimal_flag(true);
+pub fn sed(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers.set_decimal_flag(true);
 }

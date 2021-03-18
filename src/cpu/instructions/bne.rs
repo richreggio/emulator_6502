@@ -12,22 +12,22 @@ use super::*;
 // | t: =1 if branch is taken       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn bne(_memory: &mut Memory, registers: &mut Registers, mut operation: Operation) {
-    if !registers.zero_flag_is_set() {
+pub fn bne(cpu: &mut CPU, operation: &mut Operation) {
+    if !cpu.registers.zero_flag_is_set() {
         operation.cycles += 1;
 
         let offset = match operation.addressing_mode {
             AdMode::Relative(offset) => offset as u16,
-            _ => 0,
+            _ => panic!("Invalid BNE operation"),
         };
 
-        let new_address = offset.wrapping_add(registers.program_counter as u16) as usize;
+        let new_address = offset.wrapping_add(cpu.registers.program_counter as u16) as usize;
 
         // Page crossed
-        if new_address & 0xFF00 != registers.program_counter & 0xFF00 {
+        if new_address & 0xFF00 != cpu.registers.program_counter & 0xFF00 {
             operation.cycles += 1;
         }
 
-        registers.program_counter = new_address;
+        cpu.registers.program_counter = new_address;
     }
 }

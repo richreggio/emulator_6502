@@ -13,14 +13,14 @@ use super::*;
 // | Zero Page X-Indexed Indirect   | SAX ($nn,X)            | $83*   | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sax(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
-    let value = registers.accumulator & registers.x_register;
+pub fn sax(cpu: &mut CPU, operation: &mut Operation) {
+    let value = cpu.registers.accumulator & cpu.registers.x_register;
 
     match operation.addressing_mode {
-        AdMode::Absolute(address) => memory.write_byte(address, value),
-        AdMode::ZeroPage(address) => memory.write_byte(address, value),
-        AdMode::ZeroPageYIndex(address) => memory.write_byte(address, value),
-        AdMode::ZeroPageXIndexIndirect(address) => memory.write_byte(address, value),
-        _ => (),
+        AdMode::Absolute(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPage(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPageYIndex(address) => cpu.ram.write_byte(address, value),
+        AdMode::ZeroPageXIndexIndirect(address) => cpu.ram.write_byte(address, value),
+        _ => panic!("Invalid SAX operation"),
     }
 }

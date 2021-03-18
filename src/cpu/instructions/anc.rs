@@ -7,8 +7,32 @@ use super::*;
 // ---------------------------------------------------------------------------------------------
 // | Addressing Mode                | Assembly Language Form | Opcode	| No. Bytes	| No. Cycles |
 // |--------------------------------|----------------------------------------------------------|
-// | Implied                        | ANC #$nn               | $0B*   | 2         | 2          |
-// | Implied                        | ANC #$nn               | $2B*   | 2         | 2          |
+// | Immediate                      | ANC #$nn               | $0B*   | 2         | 2          |
+// | Immediate                      | ANC #$nn               | $2B*   | 2         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn anc(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn anc(cpu: &mut CPU, operation: &mut Operation) {
+    let tmp_value = match operation.addressing_mode {
+        AdMode::Immediate(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid AND operation"),
+    };
+
+    let value = cpu.registers.accumulator & tmp_value;
+
+    if value == 0 {
+        cpu.registers.set_zero_flag(true);
+    } else {
+        cpu.registers.set_zero_flag(false);
+    }
+
+    // Checking seventh bit value
+    if (value & 0b1000_0000) == 0b1000_0000 {
+        cpu.registers.set_negative_flag(true);
+        cpu.registers.set_carry_flag(true);
+    } else {
+        cpu.registers.set_negative_flag(false);
+        cpu.registers.set_carry_flag(false);
+    }
+
+    cpu.registers.accumulator = value;
+}

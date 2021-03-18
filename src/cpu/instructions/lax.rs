@@ -17,31 +17,31 @@ use super::*;
 // | p: =1 if page is crossed.    |                        |        |           |            |
 // |------------------------------------------------------------------------------------------
 
-pub fn lax(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn lax(cpu: &mut CPU, operation: &mut Operation) {
     let value = match operation.addressing_mode {
-        AdMode::Immediate(address) => memory.read_byte(address),
-        AdMode::Absolute(address) => memory.read_byte(address),
-        AdMode::AbsoluteYIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPage(address) => memory.read_byte(address),
-        AdMode::ZeroPageYIndex(address) => memory.read_byte(address),
-        AdMode::ZeroPageXIndexIndirect(address) => memory.read_byte(address),
-        AdMode::ZeroPageYIndexIndirect(address) => memory.read_byte(address),
-        _ => 0,
+        AdMode::Immediate(address) => cpu.ram.read_byte(address),
+        AdMode::Absolute(address) => cpu.ram.read_byte(address),
+        AdMode::AbsoluteYIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPage(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageYIndex(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageXIndexIndirect(address) => cpu.ram.read_byte(address),
+        AdMode::ZeroPageYIndexIndirect(address) => cpu.ram.read_byte(address),
+        _ => panic!("Invalid LAX operation"),
     };
 
-    registers.accumulator = value;
-    registers.x_register = value;
+    cpu.registers.accumulator = value;
+    cpu.registers.x_register = value;
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit of value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 }

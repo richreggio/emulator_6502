@@ -17,7 +17,7 @@ use super::*;
 // | p: =1 if page is crossed       |                        |          |           |            |
 // |----------------------------------------------------------------------------------------------
 
-pub fn sta(memory: &mut Memory, registers: &mut Registers, operation: Operation) {
+pub fn sta(cpu: &mut CPU, operation: &mut Operation) {
     let address = match operation.addressing_mode {
         AdMode::Absolute(address) => address,
         AdMode::AbsoluteXIndex(address) => address,
@@ -26,7 +26,7 @@ pub fn sta(memory: &mut Memory, registers: &mut Registers, operation: Operation)
         AdMode::ZeroPageXIndex(address) => address,
         AdMode::ZeroPageXIndexIndirect(address) => address,
         AdMode::ZeroPageYIndexIndirect(address) => address,
-        _ => 0,
+        _ => panic!("Invalid STA operation"),
     };
-    memory.write_byte(address, registers.accumulator);
+    cpu.ram.write_byte(address, cpu.registers.accumulator);
 }

@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | SEI                    | $78    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sei(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.set_interrupt_flag(true);
+pub fn sei(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers.set_interrupt_flag(true);
 }

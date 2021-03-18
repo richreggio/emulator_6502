@@ -7,7 +7,10 @@ use super::*;
 // On some machines, additional bits of the result may be set or reset depending on non-deterministic factors.
 // It then transfers the result to the accumulator.
 // XAA does not affect the C or V flags; sets Z if the value loaded was zero, otherwise resets it; sets N if the result in bit 7 is a 1; otherwise N is reset.
-// Addressing Mode	Assembly Language Form	Opcode	No. Bytes	No. Cycles
-// Immediate	XAA #$nn	$8B*	2	2
+// -------------------------------------------------------------------------------------------
+// | Addressing Mode	            | Assembly Language Form | Opcode | No. Bytes | No. Cycles |
+// |------------------------------|----------------------------------------------------------|
+// | Immediate                    | XAA                    | $8B*   | 2         | 2          |
+// |------------------------------------------------------------------------------------------
 
-pub fn xaa(_memory: &mut Memory, _registers: &mut Registers, _operation: Operation) {}
+pub fn xaa(_cpu: &mut CPU, _operation: &mut Operation) {}

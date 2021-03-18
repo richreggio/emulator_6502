@@ -10,21 +10,21 @@ use super::*;
 // | Implied                        | PLA                    | $68    | 1         | 4          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn pla(memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    let value = registers.stack_pull(memory);
+pub fn pla(cpu: &mut CPU, _operation: &mut Operation) {
+    let value = cpu.registers.stack_pull(&mut cpu.ram);
 
     if value == 0 {
-        registers.set_zero_flag(true);
+        cpu.registers.set_zero_flag(true);
     } else {
-        registers.set_zero_flag(false);
+        cpu.registers.set_zero_flag(false);
     }
 
     // Checking seventh bit value
     if (value & 0b1000_0000) == 0b1000_0000 {
-        registers.set_negative_flag(true);
+        cpu.registers.set_negative_flag(true);
     } else {
-        registers.set_negative_flag(false);
+        cpu.registers.set_negative_flag(false);
     }
 
-    registers.accumulator = value;
+    cpu.registers.accumulator = value;
 }

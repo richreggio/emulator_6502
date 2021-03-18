@@ -11,6 +11,6 @@ use super::*;
 // | Implied                        | CLD                    | $D8    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn cld(_memory: &mut Memory, registers: &mut Registers, _operation: Operation) {
-    registers.set_decimal_flag(false);
+pub fn cld(cpu: &mut CPU, _operation: &mut Operation) {
+    cpu.registers.set_decimal_flag(false);
 }
