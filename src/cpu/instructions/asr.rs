@@ -9,7 +9,7 @@ use super::*;
 // |--------------------------------|----------------------------------------------------------|
 // | Immediate                      | ASR #$nn               | $4B*   | 2         | 2          |
 // |--------------------------------------------------------------------------------------------
-pub fn asr(cpu: &mut CPU, operation: &mut Operation) {
+pub fn asr(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         _ => panic!("Invalid ASR operation"),
@@ -23,7 +23,7 @@ pub fn asr(cpu: &mut CPU, operation: &mut Operation) {
         cpu.registers.set_carry_flag(false);
     }
 
-    value = value >> 1;
+    value >>= 1;
 
     if value == 0 {
         cpu.registers.set_zero_flag(true);

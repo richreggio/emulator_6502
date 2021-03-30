@@ -13,4 +13,4 @@ use super::*;
 // | Immediate                    | XAA                    | $8B*   | 2         | 2          |
 // |------------------------------------------------------------------------------------------
 
-pub fn xaa(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn xaa(_cpu: &mut Cpu, _operation: &mut Operation) {}

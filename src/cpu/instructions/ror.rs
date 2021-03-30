@@ -14,7 +14,7 @@ use super::*;
 // | Zero Page X-Indexed            | ROR $nn,X              | $76      | 2         | 6          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn ror(cpu: &mut CPU, operation: &mut Operation) {
+pub fn ror(cpu: &mut Cpu, operation: &mut Operation) {
     let value = match operation.addressing_mode {
         AdMode::Accumulator => cpu.registers.accumulator,
         AdMode::Absolute(address) => cpu.ram.read_byte(address),

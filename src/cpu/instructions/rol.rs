@@ -14,7 +14,7 @@ use super::*;
 // | Zero Page X-Indexed            | ROL $nn,X              | $36      | 2         | 6          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn rol(cpu: &mut CPU, operation: &mut Operation) {
+pub fn rol(cpu: &mut Cpu, operation: &mut Operation) {
     let value = match operation.addressing_mode {
         AdMode::Accumulator => cpu.registers.accumulator,
         AdMode::Absolute(address) => cpu.ram.read_byte(address),

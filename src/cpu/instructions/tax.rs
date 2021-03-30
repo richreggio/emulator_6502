@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | TAX                    | $AA      | 1         | 2          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn tax(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn tax(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.x_register = cpu.registers.accumulator;
     let value = cpu.registers.x_register;
 

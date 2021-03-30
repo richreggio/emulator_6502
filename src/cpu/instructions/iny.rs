@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | INY                    | $C8    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn iny(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn iny(cpu: &mut Cpu, _operation: &mut Operation) {
     let value = cpu.registers.y_register.wrapping_add(1);
 
     if value == 0 {

@@ -20,6 +20,6 @@ use super::*;
 // | Implied                        | JAM                    | $F2*   | 1         | X          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn jam(_cpu: &mut CPU, _operation: &mut Operation) {
+pub fn jam(_cpu: &mut Cpu, _operation: &mut Operation) {
     panic!("JAM operation encountered")
 }

@@ -11,7 +11,7 @@ use super::*;
 // | Implied                        | INX                    | $E8    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn inx(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn inx(cpu: &mut Cpu, _operation: &mut Operation) {
     let value = cpu.registers.x_register.wrapping_add(1);
 
     if value == 0 {

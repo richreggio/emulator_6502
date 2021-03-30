@@ -12,4 +12,4 @@ use super::*;
 // | Immediate                      | SBX #$nn               | $CB*     | 2	        | 2          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn sbx(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn sbx(_cpu: &mut Cpu, _operation: &mut Operation) {}

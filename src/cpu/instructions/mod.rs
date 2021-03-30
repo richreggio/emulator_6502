@@ -1,6 +1,6 @@
 pub use crate::cpu::addressing_mode::AddressingMode as AdMode;
 pub use crate::cpu::operation::Operation;
-pub use crate::cpu::CPU;
+pub use crate::cpu::Cpu;
 pub use crate::memory::IRQ_VECTOR;
 
 // Load instructions - 12 total

@@ -16,4 +16,4 @@ use super::*;
 // | Zero Page Y-Indexed Indirect   | SRE ($nn),Y            | $53*     | 2	        | 8          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn sre(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn sre(_cpu: &mut Cpu, _operation: &mut Operation) {}

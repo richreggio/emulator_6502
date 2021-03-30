@@ -10,7 +10,7 @@ use super::*;
 // | Absolute                       | JSR $nnnn              | $20    |	3         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn jsr(cpu: &mut CPU, operation: &mut Operation) {
+pub fn jsr(cpu: &mut Cpu, operation: &mut Operation) {
     let old_program_counter = cpu.registers.program_counter - 1;
 
     cpu.registers

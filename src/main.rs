@@ -1,6 +1,6 @@
 pub mod cpu;
 pub mod memory;
-use cpu::CPU;
+use cpu::Cpu;
 use rand::Rng;
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
@@ -22,7 +22,7 @@ fn color(byte: u8) -> Color {
     }
 }
 
-fn handle_user_input(cpu: &mut CPU, event_pump: &mut EventPump) {
+fn handle_user_input(cpu: &mut Cpu, event_pump: &mut EventPump) {
     for event in event_pump.poll_iter() {
         match event {
             Event::Quit { .. }
@@ -51,10 +51,10 @@ fn handle_user_input(cpu: &mut CPU, event_pump: &mut EventPump) {
     }
 }
 
-fn read_screen_state(cpu: &CPU, frame: &mut [u8; 32 * 3 * 32]) -> bool {
+fn read_screen_state(cpu: &Cpu, frame: &mut [u8; 32 * 3 * 32]) -> bool {
     let mut frame_idx = 0;
     let mut update = false;
-    for i in 0x0200..0x0600 {
+    for i in 0x0200..0x600 {
         let color_idx = cpu.ram.read_byte(i);
         let (b1, b2, b3) = color(color_idx).rgb();
         if frame[frame_idx] != b1 || frame[frame_idx + 1] != b2 || frame[frame_idx + 2] != b3 {
@@ -113,27 +113,25 @@ fn main() {
         0xb0, 0x01, 0x60, 0xe6, 0x11, 0xa9, 0x06, 0xc5, 0x11, 0xf0, 0x0c, 0x60, 0xc6, 0x10, 0xa5,
         0x10, 0x29, 0x1f, 0xc9, 0x1f, 0xf0, 0x01, 0x60, 0x4c, 0x35, 0x07, 0xa0, 0x00, 0xa5, 0xfe,
         0x91, 0x00, 0x60, 0xa6, 0x03, 0xa9, 0x00, 0x81, 0x10, 0xa2, 0x00, 0xa9, 0x01, 0x81, 0x10,
-        0x60, 0xa2, 0x00, 0xea, 0xea, 0xca, 0xd0, 0xfb, 0x60,
+        0x60, 0xa6, 0xff, 0xea, 0xea, 0xca, 0xd0, 0xfb, 0x60,
     ];
 
     // Create the 6502 and memory
-    let mut cpu = CPU::new();
+    let mut cpu = Cpu::new();
 
     // Load Snake program into memory
     cpu.ram.load_program(game_code);
     cpu.reset();
 
-    let mut screen_state = [0 as u8; 32 * 3 * 32];
+    let mut screen_state = [0_u8; 32 * 3 * 32];
     let mut rng = rand::thread_rng();
 
-    loop {
-        // Perform the next operation
-        cpu.execute();
+    cpu.execute(move |cpu| {
+        handle_user_input(cpu, &mut event_pump);
 
-        handle_user_input(&mut cpu, &mut event_pump);
         cpu.ram.write_byte(0xFE, rng.gen_range(1..16));
 
-        if read_screen_state(&cpu, &mut screen_state) {
+        if read_screen_state(cpu, &mut screen_state) {
             texture.update(None, &screen_state, 32 * 3).unwrap();
             canvas.copy(&texture, None, None).unwrap();
             canvas.present();
@@ -141,5 +139,5 @@ fn main() {
 
         // Make the system wait
         std::thread::sleep(std::time::Duration::new(0, 70_000));
-    }
+    });
 }

@@ -40,16 +40,21 @@ impl Memory {
     pub fn load_program(&mut self, data: Vec<u8>) {
         // Start location for any program loaded into memory
         let mut address = 0x0600;
+        let address_lo_byte = (address & 0x00FF) as u8;
+        let address_high_byte = (address >> 8) as u8;
+        self.ram[RESET_VECTOR] = address_lo_byte;
+        self.ram[RESET_VECTOR + 1] = address_high_byte;
 
         for byte in data {
             self.ram[address] = byte;
             address += 1;
         }
+    }
+}
 
-        let address_lo_byte = (address & 0x00FF) as u8;
-        let address_high_byte = (address >> 8) as u8;
-        self.ram[RESET_VECTOR] = address_lo_byte;
-        self.ram[RESET_VECTOR + 1] = address_high_byte;
+impl Default for Memory {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

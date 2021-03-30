@@ -10,11 +10,11 @@ use super::*;
 // | Implied                        | RTI                    | $40    | 1         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn rti(cpu: &mut CPU, _operation: &mut Operation) {
-    let processor_status = cpu.registers.stack_pull(&mut cpu.ram);
+pub fn rti(cpu: &mut Cpu, _operation: &mut Operation) {
+    let processor_status = cpu.registers.stack_pull(&cpu.ram);
     cpu.registers.set_processor_status(processor_status);
 
-    let lo_byte = cpu.registers.stack_pull(&mut cpu.ram) as usize;
-    let high_byte = (cpu.registers.stack_pull(&mut cpu.ram) as usize) << 8;
+    let lo_byte = cpu.registers.stack_pull(&cpu.ram) as usize;
+    let high_byte = (cpu.registers.stack_pull(&cpu.ram) as usize) << 8;
     cpu.registers.program_counter = high_byte + lo_byte;
 }

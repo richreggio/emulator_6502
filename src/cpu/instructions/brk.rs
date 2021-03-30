@@ -11,15 +11,15 @@ use super::*;
 // | Implied                        | BRK                    | $00    |	1         | 7          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn brk(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn brk(_cpu: &mut Cpu, _operation: &mut Operation) {
     // Push high byte then low byte of program counter to the stack
-    cpu.registers
-        .stack_push(&mut cpu.ram, (cpu.registers.program_counter >> 8) as u8);
-    cpu.registers
-        .stack_push(&mut cpu.ram, (cpu.registers.program_counter & 0x00FF) as u8);
-    cpu.registers
-        .stack_push(&mut cpu.ram, cpu.registers.get_processor_status());
-    cpu.registers.program_counter =
-        cpu.ram.read_byte(IRQ_VECTOR) as usize + (cpu.ram.read_byte(IRQ_VECTOR + 1) as usize) << 8;
-    cpu.registers.set_break_flag(true);
+    // cpu.registers
+    //     .stack_push(&mut cpu.ram, (cpu.registers.program_counter >> 8) as u8);
+    // cpu.registers
+    //     .stack_push(&mut cpu.ram, (cpu.registers.program_counter & 0x00FF) as u8);
+    // cpu.registers
+    //     .stack_push(&mut cpu.ram, cpu.registers.get_processor_status());
+    // cpu.registers.program_counter =
+    //     cpu.ram.read_byte(IRQ_VECTOR) as usize + (cpu.ram.read_byte(IRQ_VECTOR + 1) as usize) << 8;
+    // cpu.registers.set_break_flag(true);
 }

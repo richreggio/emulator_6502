@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | SEC                    | $38    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sec(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn sec(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.set_carry_flag(true);
 }

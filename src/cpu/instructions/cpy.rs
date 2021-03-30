@@ -12,7 +12,7 @@ use super::*;
 // | Zero Page                      | CPY $nn                | $C4    | 2         | 3          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn cpy(cpu: &mut CPU, operation: &mut Operation) {
+pub fn cpy(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         AdMode::Absolute(address) => cpu.ram.read_byte(address),

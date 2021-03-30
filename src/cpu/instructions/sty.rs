@@ -13,7 +13,7 @@ use super::*;
 // | p: =1 if page is crossed       |                        |          |           |            |
 // |----------------------------------------------------------------------------------------------
 
-pub fn sty(cpu: &mut CPU, operation: &mut Operation) {
+pub fn sty(cpu: &mut Cpu, operation: &mut Operation) {
     let address = match operation.addressing_mode {
         AdMode::Absolute(address) => address,
         AdMode::ZeroPage(address) => address,

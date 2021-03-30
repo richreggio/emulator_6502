@@ -11,7 +11,7 @@ use super::*;
 // | Zero Page                      | Bit $nn                | $24    | 2         | 3          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn bit(cpu: &mut CPU, operation: &mut Operation) {
+pub fn bit(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Absolute(address) => cpu.ram.read_byte(address),
         AdMode::ZeroPage(address) => cpu.ram.read_byte(address),

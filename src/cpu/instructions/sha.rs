@@ -13,4 +13,4 @@ use super::*;
 // | Zero Page Y-Indexed Indirect   | SHA ($nn),Y            | $93*   | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sha(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn sha(_cpu: &mut Cpu, _operation: &mut Operation) {}

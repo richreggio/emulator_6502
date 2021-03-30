@@ -11,7 +11,7 @@ use super::*;
 // | Absolute Indirect              | JMP ($nnnn)            | $6C    | 3         | 5          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn jmp(cpu: &mut CPU, operation: &mut Operation) {
+pub fn jmp(cpu: &mut Cpu, operation: &mut Operation) {
     match operation.addressing_mode {
         AdMode::Absolute(address) => cpu.registers.program_counter = address,
         AdMode::AbsoluteIndirect(address) => cpu.registers.program_counter = address,

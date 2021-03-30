@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | TXA                    | $8A    | 1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn txa(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn txa(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.accumulator = cpu.registers.x_register;
     let value = cpu.registers.accumulator;
 

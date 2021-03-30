@@ -10,8 +10,8 @@ use super::*;
 // | Implied                        | PLA                    | $68    | 1         | 4          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn pla(cpu: &mut CPU, _operation: &mut Operation) {
-    let value = cpu.registers.stack_pull(&mut cpu.ram);
+pub fn pla(cpu: &mut Cpu, _operation: &mut Operation) {
+    let value = cpu.registers.stack_pull(&cpu.ram);
 
     if value == 0 {
         cpu.registers.set_zero_flag(true);

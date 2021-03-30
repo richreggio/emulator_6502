@@ -10,4 +10,4 @@ use super::*;
 // | Absolute X-Indexed             | SHY $nnnn,X            | $9C*   | 3         | 5          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn shy(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn shy(_cpu: &mut Cpu, _operation: &mut Operation) {}

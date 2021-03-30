@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | TSX                    | $BA    | 1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn tsx(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn tsx(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.x_register = cpu.registers.stack_pointer;
     let value = cpu.registers.x_register;
 

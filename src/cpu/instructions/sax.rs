@@ -13,7 +13,7 @@ use super::*;
 // | Zero Page X-Indexed Indirect   | SAX ($nn,X)            | $83*   | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sax(cpu: &mut CPU, operation: &mut Operation) {
+pub fn sax(cpu: &mut Cpu, operation: &mut Operation) {
     let value = cpu.registers.accumulator & cpu.registers.x_register;
 
     match operation.addressing_mode {

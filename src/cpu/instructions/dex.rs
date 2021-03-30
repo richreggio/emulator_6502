@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | DEX                    | $CA    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn dex(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn dex(cpu: &mut Cpu, _operation: &mut Operation) {
     let value = cpu.registers.x_register.wrapping_sub(1);
 
     if value == 0 {

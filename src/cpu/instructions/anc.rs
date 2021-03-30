@@ -11,7 +11,7 @@ use super::*;
 // | Immediate                      | ANC #$nn               | $2B*   | 2         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn anc(cpu: &mut CPU, operation: &mut Operation) {
+pub fn anc(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         _ => panic!("Invalid AND operation"),

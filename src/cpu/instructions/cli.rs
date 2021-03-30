@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | CLI                    | $58    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn cli(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn cli(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.set_decimal_flag(false);
 }

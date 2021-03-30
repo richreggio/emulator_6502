@@ -8,14 +8,14 @@ mod instructions;
 pub mod operation;
 pub mod registers;
 
-pub struct CPU {
+pub struct Cpu {
     pub registers: Registers,
     pub ram: Memory,
 }
 
-impl CPU {
-    pub fn new() -> CPU {
-        CPU {
+impl Cpu {
+    pub fn new() -> Cpu {
+        Cpu {
             registers: Registers::new_initalized(),
             ram: Memory::new_initalized(),
         }
@@ -29,14 +29,33 @@ impl CPU {
         //TODO
     }
 
-    pub fn reset_request() {
+    pub fn nmi_request() {
         //TODO
     }
 
-    pub fn execute(&mut self) {
-        // Get next operation
-        let mut operation = Operation::next(self);
-        // Perform the next operation
-        (operation.instruction_function)(self, &mut operation);
+    pub fn execute<F>(&mut self, mut callback: F)
+    where
+        F: FnMut(&mut Cpu),
+    {
+        loop {
+            // Get next operation
+            let mut operation = Operation::next(self);
+
+            // Debug printing of instruction
+            if self.ram.read_byte(self.registers.program_counter) != 0 {
+                operation.disassemble();
+            }
+
+            // Perform the next operation
+            (operation.instruction_function)(self, &mut operation);
+
+            callback(self);
+        }
+    }
+}
+
+impl Default for Cpu {
+    fn default() -> Self {
+        Self::new()
     }
 }

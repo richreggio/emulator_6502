@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | TAY                    | $A8      | 1         | 2          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn tay(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn tay(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.y_register = cpu.registers.accumulator;
     let value = cpu.registers.y_register;
 

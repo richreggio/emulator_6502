@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | TYA                    | $98    | 1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn tya(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn tya(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.stack_pointer = cpu.registers.y_register;
 }

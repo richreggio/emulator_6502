@@ -10,4 +10,4 @@ use super::*;
 // | Absolute Y-Indexed             | SHS $nnnn,Y            | $9B*   | 3         | 5          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn shs(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn shs(_cpu: &mut Cpu, _operation: &mut Operation) {}

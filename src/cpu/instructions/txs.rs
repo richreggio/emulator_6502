@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | TXS                    | $08      | 1         | 3          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn txs(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn txs(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.stack_pointer = cpu.registers.x_register;
 }

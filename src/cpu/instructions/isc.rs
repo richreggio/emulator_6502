@@ -16,7 +16,7 @@ use super::*;
 // | Zero Page Y-Indexed Indirect   | ISC ($nn),Y            | $F3*   | 2         | 8          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn isc(_cpu: &mut CPU, _operation: &mut Operation) {
+pub fn isc(_cpu: &mut Cpu, _operation: &mut Operation) {
     // let mut tmp_value = match operation.addressing_mode {
     //     AdMode::Absolute(address) => memory.read_byte(address),
     //     AdMode::AbsoluteXIndex(address) => memory.read_byte(address),

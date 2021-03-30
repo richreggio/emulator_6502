@@ -11,7 +11,7 @@ use super::*;
 // | p: =1 if page is crossed.    |                        |        |           |            |
 // |------------------------------------------------------------------------------------------
 
-pub fn las(cpu: &mut CPU, operation: &mut Operation) {
+pub fn las(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::AbsoluteYIndex(address) => cpu.ram.read_byte(address),
         _ => panic!("Invalid LAS operation"),

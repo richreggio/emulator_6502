@@ -17,7 +17,7 @@ use super::*;
 // | p: =1 if page is crossed       |                        |          |           |            |
 // |----------------------------------------------------------------------------------------------
 
-pub fn sta(cpu: &mut CPU, operation: &mut Operation) {
+pub fn sta(cpu: &mut Cpu, operation: &mut Operation) {
     let address = match operation.addressing_mode {
         AdMode::Absolute(address) => address,
         AdMode::AbsoluteXIndex(address) => address,

@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | CLC                    | $18    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn clc(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn clc(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.set_carry_flag(false);
 }

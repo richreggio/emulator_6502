@@ -16,4 +16,4 @@ use super::*;
 // | Zero Page Y-Indexed Indirect   | RRA ($nn),Y            | $73*   | 2         | 8          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn rra(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn rra(_cpu: &mut Cpu, _operation: &mut Operation) {}

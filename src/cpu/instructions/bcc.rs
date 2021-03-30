@@ -12,7 +12,7 @@ use super::*;
 // | t: =1 if branch is taken       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn bcc(cpu: &mut CPU, operation: &mut Operation) {
+pub fn bcc(cpu: &mut Cpu, operation: &mut Operation) {
     if !cpu.registers.carry_flag_is_set() {
         operation.cycles += 1;
 

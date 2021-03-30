@@ -16,7 +16,7 @@ use super::*;
 // | Zero Page Y-Indexed Indirect   | DCP ($nn),Y            | $D3*   | 2         | 8          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn dcp(cpu: &mut CPU, operation: &mut Operation) {
+pub fn dcp(cpu: &mut Cpu, operation: &mut Operation) {
     let mut tmp_value = match operation.addressing_mode {
         AdMode::Absolute(address) => cpu.ram.read_byte(address),
         AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),

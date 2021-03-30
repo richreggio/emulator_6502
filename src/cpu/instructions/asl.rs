@@ -14,7 +14,7 @@ use super::*;
 // | Zero Page X-Indexed            | ASL $nn,X              | $16    | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn asl(cpu: &mut CPU, operation: &mut Operation) {
+pub fn asl(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Accumulator => cpu.registers.accumulator,
         AdMode::Absolute(address) => cpu.ram.read_byte(address),

@@ -36,4 +36,4 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn nop(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn nop(_cpu: &mut Cpu, _operation: &mut Operation) {}

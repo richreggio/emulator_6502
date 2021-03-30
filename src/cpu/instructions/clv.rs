@@ -10,6 +10,6 @@ use super::*;
 // | Implied                        | CLV                    | $B8    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn clv(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn clv(cpu: &mut Cpu, _operation: &mut Operation) {
     cpu.registers.set_overflow_flag(false);
 }

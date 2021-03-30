@@ -13,7 +13,7 @@ use super::*;
 // | Immediate                      | ARR #$nn               | $6B*   | 2         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn arr(cpu: &mut CPU, operation: &mut Operation) {
+pub fn arr(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         _ => panic!("Invalid ARR operation"),
@@ -29,7 +29,7 @@ pub fn arr(cpu: &mut CPU, operation: &mut Operation) {
         cpu.registers.set_carry_flag(false);
     }
 
-    value = value >> 1;
+    value >>= 1;
 
     if old_carry_flag {
         value += 0b1000_0000;

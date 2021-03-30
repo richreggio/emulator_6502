@@ -19,7 +19,7 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn adc(cpu: &mut CPU, operation: &mut Operation) {
+pub fn adc(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         AdMode::Absolute(address) => cpu.ram.read_byte(address),
@@ -73,8 +73,8 @@ pub fn adc(cpu: &mut CPU, operation: &mut Operation) {
 mod tests {
     use super::*;
 
-    fn adc_setup(accumulator_value: u8, memory_value: u8) -> (CPU, Operation) {
-        let mut cpu = CPU::new();
+    fn adc_setup(accumulator_value: u8, memory_value: u8) -> (Cpu, Operation) {
+        let mut cpu = Cpu::new();
         cpu.registers.initalize(0x8000);
 
         // Using opcode for Immediate addressing to simplify testing

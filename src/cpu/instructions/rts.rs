@@ -10,9 +10,9 @@ use super::*;
 // | Implied                        | RTS                    | $60    | 1         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn rts(cpu: &mut CPU, _operation: &mut Operation) {
-    let lo_byte = cpu.registers.stack_pull(&mut cpu.ram) as usize;
-    let high_byte = (cpu.registers.stack_pull(&mut cpu.ram) as usize) << 8;
+pub fn rts(cpu: &mut Cpu, _operation: &mut Operation) {
+    let lo_byte = cpu.registers.stack_pull(&cpu.ram) as usize;
+    let high_byte = (cpu.registers.stack_pull(&cpu.ram) as usize) << 8;
 
     cpu.registers.program_counter = (high_byte + lo_byte) + 1;
 }

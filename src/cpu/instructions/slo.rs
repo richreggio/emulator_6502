@@ -16,4 +16,4 @@ use super::*;
 // | Zero Page Y-Indexed Indirect   | SLO ($nn),Y            | $13*     | 2	        | 8          |
 // |----------------------------------------------------------------------------------------------
 
-pub fn slo(_cpu: &mut CPU, _operation: &mut Operation) {}
+pub fn slo(_cpu: &mut Cpu, _operation: &mut Operation) {}

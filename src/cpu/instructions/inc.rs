@@ -13,7 +13,7 @@ use super::*;
 // | Zero Page X-Indexed            | INC $nn,X              | $F6    | 2         | 6          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn inc(cpu: &mut CPU, operation: &mut Operation) {
+pub fn inc(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Absolute(address) => cpu.ram.read_byte(address),
         AdMode::AbsoluteXIndex(address) => cpu.ram.read_byte(address),

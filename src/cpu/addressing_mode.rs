@@ -1,4 +1,4 @@
-use crate::cpu::CPU;
+use crate::cpu::Cpu;
 
 #[derive(Debug, PartialEq)]
 pub enum AddressingMode {
@@ -18,7 +18,7 @@ pub enum AddressingMode {
 }
 
 impl AddressingMode {
-    pub fn process(&self, cpu: &CPU) -> (AddressingMode, u8) {
+    pub fn process(&self, cpu: &Cpu) -> (AddressingMode, u8) {
         match *self {
             // Implied
             // In the implied addressing mode, the address containing the operand is implicitly stated in the operation code of the instruction.
@@ -163,8 +163,8 @@ impl AddressingMode {
 mod tests {
     use super::*;
 
-    fn setup_state() -> CPU {
-        let mut cpu = CPU::new();
+    fn setup_state() -> Cpu {
+        let mut cpu = Cpu::new();
 
         cpu.registers.accumulator = 0x10;
         cpu.registers.x_register = 0x03;

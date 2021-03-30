@@ -10,8 +10,8 @@ use super::*;
 // | Implied                        | PLP                    | $28    | 1         | 4          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn plp(cpu: &mut CPU, _operation: &mut Operation) {
-    let value = cpu.registers.stack_pull(&mut cpu.ram);
+pub fn plp(cpu: &mut Cpu, _operation: &mut Operation) {
+    let value = cpu.registers.stack_pull(&cpu.ram);
 
     cpu.registers.set_processor_status(value);
 }

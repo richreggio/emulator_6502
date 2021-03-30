@@ -20,7 +20,7 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn sbc(cpu: &mut CPU, operation: &mut Operation) {
+pub fn sbc(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         AdMode::Absolute(address) => cpu.ram.read_byte(address),

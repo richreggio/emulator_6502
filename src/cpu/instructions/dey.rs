@@ -10,7 +10,7 @@ use super::*;
 // | Implied                        | DEY                    | $88    |	1         | 2          |
 // |--------------------------------------------------------------------------------------------
 
-pub fn dey(cpu: &mut CPU, _operation: &mut Operation) {
+pub fn dey(cpu: &mut Cpu, _operation: &mut Operation) {
     let value = cpu.registers.y_register.wrapping_sub(1);
 
     if value == 0 {

@@ -18,7 +18,7 @@ use super::*;
 // | p: =1 if page is crossed       |                        |        |           |            |
 // |--------------------------------------------------------------------------------------------
 
-pub fn eor(cpu: &mut CPU, operation: &mut Operation) {
+pub fn eor(cpu: &mut Cpu, operation: &mut Operation) {
     let tmp_value = match operation.addressing_mode {
         AdMode::Immediate(address) => cpu.ram.read_byte(address),
         AdMode::Absolute(address) => cpu.ram.read_byte(address),
