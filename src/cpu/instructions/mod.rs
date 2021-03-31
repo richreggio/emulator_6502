@@ -4,21 +4,21 @@ pub use crate::cpu::Cpu;
 pub use crate::memory::IRQ_VECTOR;
 
 // Load instructions - 12 total
-mod las;
-mod lax;
+mod las; // Undocumented
+mod lax; // Undocumented
 mod lda;
 mod ldx;
 mod ldy;
-mod sax;
-mod sha;
-mod shx;
-mod shy;
+mod sax; // Undocumented
+mod sha; // Undocumented
+mod shx; // Undocumented
+mod shy; // Undocumented
 mod sta;
 mod stx;
 mod sty;
 
 // Transfer instructions - 7 total
-mod shs;
+mod shs; // Undocumented
 mod tax;
 mod tay;
 mod tsx;
@@ -46,21 +46,21 @@ mod ora;
 
 // Arithmetic instructions - 16 total
 mod adc;
-mod anc;
-mod arr;
-mod asr;
+mod anc; // Undocumented
+mod arr; // Undocumented
+mod asr; // Undocumented
 mod cmp;
 mod cpx;
 mod cpy;
-mod dcp;
-mod isc;
-mod rla;
-mod rra;
+mod dcp; // Undocumented
+mod isc; // Undocumented
+mod rla; // Undocumented
+mod rra; // Undocumented
 mod sbc;
-mod sbx;
-mod slo;
-mod sre;
-mod xaa;
+mod sbx; // Undocumented
+mod slo; // Undocumented
+mod sre; // Undocumented
+mod xaa; // Undocumented
 
 // Increment instructions - 6 total
 mod dec;
@@ -97,7 +97,7 @@ mod sed;
 mod sei;
 
 // Halt the CPU instruction
-mod jam;
+mod jam; // Undocumented
 
 // No operation instruction
 mod nop;
@@ -177,3 +177,20 @@ pub use txa::txa;
 pub use txs::txs;
 pub use tya::tya;
 pub use xaa::xaa;
+
+pub fn negative_check(value: u8, cpu: &mut Cpu) {
+    // Checking seventh bit value
+    if (value & 0b1000_0000) == 0b1000_0000 {
+        cpu.registers.set_negative_flag(true);
+    } else {
+        cpu.registers.set_negative_flag(false);
+    }
+}
+
+pub fn zero_check(value: u8, cpu: &mut Cpu) {
+    if value == 0 {
+        cpu.registers.set_zero_flag(true);
+    } else {
+        cpu.registers.set_zero_flag(false);
+    }
+}
